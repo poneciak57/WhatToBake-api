@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/recipe")
@@ -18,8 +20,8 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @GetMapping("/")
-    public Flux<Recipe> getAllRecipes(@RequestBody RecipeFilters recipeFilters){
-        return recipeService.getAllRecipes(recipeFilters);
+    public Flux<Recipe> getAllRecipes(@RequestBody Optional<RecipeFilters> recipeFilters){
+        return recipeService.getAllRecipes(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
     }
 
     @GetMapping("/{id}")
