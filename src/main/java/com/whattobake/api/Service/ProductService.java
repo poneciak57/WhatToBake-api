@@ -1,6 +1,8 @@
 package com.whattobake.api.Service;
 
 import com.whattobake.api.Dto.ProductFilters;
+import com.whattobake.api.Dto.ProductInsertRequest;
+import com.whattobake.api.Dto.ProductUpdateRequest;
 import com.whattobake.api.Enum.ProductOrder;
 import com.whattobake.api.Model.Product;
 import com.whattobake.api.Repository.ProductRepository;
@@ -10,6 +12,7 @@ import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,5 +39,21 @@ public class ProductService {
         return template.findAll(q, Map.of(
 
         ),Product.class);
+    }
+
+    public Mono<Product> getOneById(Long id) {
+        return null;
+    }
+
+    public Mono<Product> newProduct(ProductInsertRequest productInsertRequest) {
+        return null;
+    }
+
+    public Mono<Product> updateProduct(ProductUpdateRequest build) {
+        return null;
+    }
+
+    public Mono<Void> deleteProduct(Long id) {
+        return null;
     }
 }
