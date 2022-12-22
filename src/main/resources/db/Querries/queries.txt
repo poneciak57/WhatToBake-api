@@ -1,0 +1,22 @@
+
+// creating constraints //
+CREATE CONSTRAINT category_contraint_name FOR (c:CATEGORY) REQUIRE c.name IS UNIQUE;
+CREATE CONSTRAINT product_contraint_name FOR (p:PRODUCT) REQUIRE p.name IS UNIQUE;
+
+// adding products and categories when initializing //
+CREATE 
+(c1:CATEGORY{name:"c1"}),
+(c2:CATEGORY{name:"c2"}),
+
+(p1:PRODUCT{name:"prod1"})-[:HAS_CATEGORY]->(c1);
+
+// adding categories after initialization //
+CREATE (c:CATEGORY{name:"c"})
+
+// adding products after initialization //
+MATCH (c:CATEGORY{name:"c1"}) CREATE (p:PRODUCT{name:"prod"})-[:HAS_CATEGORY]->(c);
+
+// adding recipe after initialization //
+CREATE (r:RECIPE{title:"t",link:"l",image:"img"}) 
+WITH r MATCH (p:PRODUCT) WHERE p.name IN ["prod1","prod"]
+CREATE (r)-[:NEEDS]->(p);
