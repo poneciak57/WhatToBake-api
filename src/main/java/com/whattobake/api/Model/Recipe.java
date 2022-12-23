@@ -24,7 +24,10 @@ public class Recipe {
     private String title;
     private String link;
     private String image;
+    private Long likes;
 
     @Relationship("NEEDS")
     private List<Product> products;
+    @Relationship("HAS_TAG")
+    private List<Tag> tags;
 }

@@ -1,4 +1,4 @@
-package com.whattobake.api.Dto;
+package com.whattobake.api.Dto.UpdateDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
