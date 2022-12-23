@@ -55,6 +55,7 @@ public class RecipeController {
                         .image(recipeInsertRequest.getImage())
                         .link(recipeInsertRequest.getLink())
                         .products(recipeInsertRequest.getProducts())
+                        .tags(recipeInsertRequest.getTags())
                 .build())
                 .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+id+" does not exist")));
     }

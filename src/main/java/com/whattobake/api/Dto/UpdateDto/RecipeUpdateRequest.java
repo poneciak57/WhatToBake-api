@@ -17,4 +17,5 @@ public class RecipeUpdateRequest {
     private String link;
     private String image;
     private List<Long> products;
+    private List<Long> tags;
 }

@@ -27,7 +27,11 @@ public class RecipeMaper {
                 category: c{
                     id: ID(c),
                     .*
-             }}]
+             }}],
+            tags: [ (recipe)-[:HAS_TAG]->(t:TAG) | t{
+                id: ID(t),
+                .*
+            }]
         }
     """;
 

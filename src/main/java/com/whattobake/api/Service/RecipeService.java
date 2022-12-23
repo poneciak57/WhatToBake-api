@@ -31,17 +31,46 @@ public class RecipeService {
     public Mono<RecipeInfo> info(RecipeFilters recipeFilters){
         String q = """
             CALL { MATCH (r:recipe) RETURN COUNT(r) AS countAll }
-            CALL { MATCH (r:recipe) RETURN COUNT(r) AS countWithFilters }
+            CALL {
+                MATCH (r:recipe) 
+                """ + recipeFilters.getTagOption().getValue() + """
+                RETURN COUNT(r) AS countWithFilters 
+            }
             RETURN {
                 count: countAll,
                 countWithFilters: countWithFilters
             }""";
         ObjectMapper mapper = new ObjectMapper();
         return client.query(q)
-//                .bindAll(params)
+                .bindAll(Map.of(
+                        "tags",recipeFilters.getTags(),
+                        "tags_size",recipeFilters.getTags().size()
+                ))
                 .fetchAs(RecipeInfo.class)
                 .mappedBy((ts,r)-> mapper.convertValue(r.get("recipe").asMap(), RecipeInfo.class)
                 ).first();
+    }
+    public Flux<Recipe> getAllRecipes(RecipeFilters recipeFilters){
+        String q = """
+                MATCH (recipe:RECIPE)
+                """+ recipeFilters.getTagOption().getValue() +"""
+                CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) RETURN COUNT(p) AS prodCount }
+                CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
+                
+                RETURN""" + RecipeMaper.RETURN + """
+                    ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts
+                """;
+        if(!recipeFilters.getProductOrder().isEmpty()){
+            q +=" ORDER BY " + recipeFilters.getProductOrder().stream()
+                    .map(RecipeProductOrder::getValue)
+                    .collect(Collectors.joining(","));
+        }
+        q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
+        return recipeMaper.resultAsRecipes(q,Map.of(
+                "products",recipeFilters.getProducts(),
+                "tags",recipeFilters.getTags(),
+                "tags_size",recipeFilters.getTags().size()
+        ));
     }
 
     public Mono<Recipe> updateRecipe(RecipeUpdateRequest recipeUpdateRequest){
@@ -52,10 +81,14 @@ public class RecipeService {
             SET recipe.image = $image
             WITH recipe
             CALL{ WITH recipe MATCH (recipe)-[r:NEEDS]->(:PRODUCT) DELETE r }
-            WITH recipe
             CALL{ WITH recipe
-                MATCH (product:PRODUCT)-[pc_rel:HAS_CATEGORY]->(category:CATEGORY) WHERE ID(product) IN $products
-                MERGE (recipe)-[rp_rel:NEEDS]->(product)
+                MATCH (product:PRODUCT) WHERE ID(product) IN $products
+                MERGE (recipe)-[:NEEDS]->(product)
+            }
+            CALL{ WITH recipe MATCH (recipe)-[r:HAS_TAG]->(:TAG) DELETE r }            
+            CALL{ WITH recipe
+                MATCH (tag:TAG) WHERE ID(tag) IN $tags
+                MERGE (recipe)-[:HAS_TAG]->(tag)
             }
             RETURN""" + RecipeMaper.RETURN;
         return recipeMaper.resultAsRecipe(q,Map.of(
@@ -63,7 +96,8 @@ public class RecipeService {
                 "title", recipeUpdateRequest.getTitle(),
                 "link", recipeUpdateRequest.getLink(),
                 "image", recipeUpdateRequest.getImage(),
-                "products", recipeUpdateRequest.getProducts()
+                "products", recipeUpdateRequest.getProducts(),
+                "tags", recipeUpdateRequest.getTags()
         ));
     }
     public Mono<Void> deleteRecipe(Long id){
@@ -75,32 +109,22 @@ public class RecipeService {
                 WITH recipe
                 CALL{
                     WITH recipe
-                    MATCH (product:PRODUCT)-[pc_rel:HAS_CATEGORY]->(category:CATEGORY) WHERE ID(product) IN $products
-                    MERGE (recipe)-[rp_rel:NEEDS]->(product)
+                    MATCH (product:PRODUCT) WHERE ID(product) IN $products
+                    MERGE (recipe)-[:NEEDS]->(product)
+                }
+                CALL{
+                    WITH recipe
+                    MATCH (tag:TAG) WHERE ID(tag) IN $tags
+                    MERGE (recipe)-[:HAS_TAG]->(tag)
                 }
                 RETURN"""+RecipeMaper.RETURN;
         return recipeMaper.resultAsRecipe(q,Map.of(
                 "title", recipeInsertRequest.getTitle(),
                 "link", recipeInsertRequest.getLink(),
                 "image", recipeInsertRequest.getImage(),
-                "products", recipeInsertRequest.getProducts()
+                "products", recipeInsertRequest.getProducts(),
+                "tags", recipeInsertRequest.getTags()
         ));
-    }
-    public Flux<Recipe> getAllRecipes(RecipeFilters recipeFilters){
-        String q = """
-                MATCH (recipe:RECIPE)
-                CALL{ WITH recipe MATCH(recipe)-[rp_rel:NEEDS]->(product:PRODUCT) RETURN COUNT(product) AS prodCount }
-                CALL{ WITH recipe MATCH (recipe:RECIPE)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
-                RETURN""" + RecipeMaper.RETURN + """
-                    ,HasProducts , (prodCount - HasProducts) AS HasNotProducts
-                """;
-        if(!recipeFilters.getProductOrder().isEmpty()){
-            q +=" ORDER BY " + recipeFilters.getProductOrder().stream()
-                    .map(RecipeProductOrder::getValue)
-                    .collect(Collectors.joining(","));
-        }
-        q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
-        return recipeMaper.resultAsRecipes(q,Map.of("products",recipeFilters.getProducts()));
     }
 
     public Mono<Recipe> getOneById(Long id) {
