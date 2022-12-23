@@ -1,4 +1,4 @@
-package com.whattobake.api.Dto;
+package com.whattobake.api.Dto.InsertDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProductUpdateRequest {
-    private Long id;
+public class CategoryInsertRequest {
     private String name;
-    private Long category;
 }

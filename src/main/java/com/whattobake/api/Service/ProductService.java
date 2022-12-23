@@ -1,14 +1,12 @@
 package com.whattobake.api.Service;
 
-import com.whattobake.api.Dto.ProductFilters;
-import com.whattobake.api.Dto.ProductInsertRequest;
-import com.whattobake.api.Dto.ProductUpdateRequest;
+import com.whattobake.api.Dto.FilterDto.ProductFilters;
+import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
+import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
 import com.whattobake.api.Enum.ProductOrder;
 import com.whattobake.api.Model.Product;
-import com.whattobake.api.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

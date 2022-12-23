@@ -1,4 +1,4 @@
-package com.whattobake.api.Dto;
+package com.whattobake.api.Dto.FilterDto;
 
 import com.whattobake.api.Enum.ProductOrder;
 import com.whattobake.api.Interfaces.Filter;

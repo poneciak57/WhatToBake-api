@@ -1,8 +1,8 @@
 package com.whattobake.api.Controller;
 
-import com.whattobake.api.Dto.ProductFilters;
-import com.whattobake.api.Dto.ProductInsertRequest;
-import com.whattobake.api.Dto.ProductUpdateRequest;
+import com.whattobake.api.Dto.FilterDto.ProductFilters;
+import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
+import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
 import com.whattobake.api.Model.Product;
 import com.whattobake.api.Service.ProductService;
 import lombok.RequiredArgsConstructor;
