@@ -1,6 +1,6 @@
 package com.whattobake.api.Interfaces;
 
-public interface Filter<T> {
+public interface NotNull<T> {
 
     T fillDefaults();
 }
