@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CategoryInsertRequest {
     private String name;
+    private String icon;
 }

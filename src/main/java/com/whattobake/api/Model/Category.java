@@ -16,6 +16,7 @@ public class Category {
     @GeneratedValue
     private Long id;
     private String name;
+    private String icon;
 
     public Category(String name) {
         this.name = name;

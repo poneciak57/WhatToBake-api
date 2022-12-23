@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class CategoryUpdateRequest {
     private Long id;
     private String name;
+    private String icon;
 }
