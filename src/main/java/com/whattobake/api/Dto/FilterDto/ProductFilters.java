@@ -1,7 +1,7 @@
 package com.whattobake.api.Dto.FilterDto;
 
 import com.whattobake.api.Enum.ProductOrder;
-import com.whattobake.api.Interfaces.Filter;
+import com.whattobake.api.Interfaces.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,14 +11,12 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductFilters implements Filter<ProductFilters> {
+public class ProductFilters implements NotNull<ProductFilters> {
     private List<ProductOrder> productOrder;
 
     @Override
     public ProductFilters fillDefaults() {
-        if(productOrder == null){
-            productOrder = List.of();
-        }
+        productOrder = (productOrder == null ? List.of() : productOrder);
         return this;
     }
 }
