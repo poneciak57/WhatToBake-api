@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class RecipeService {
 
 //    TODO przepisac wszystko na maper dodac tagi
-    private final Long RECIPES_PER_PAGE = 10L;
+    private final Long RECIPES_PER_PAGE = 20L;
     private final ReactiveNeo4jTemplate template;
     private final ReactiveNeo4jClient client;
     private final RecipeMaper recipeMaper;
@@ -32,9 +32,9 @@ public class RecipeService {
         String q = """
             CALL { MATCH (r:recipe) RETURN COUNT(r) AS countAll }
             CALL {
-                MATCH (r:recipe) 
+                MATCH (r:recipe)
                 """ + recipeFilters.getTagOption().getValue() + """
-                RETURN COUNT(r) AS countWithFilters 
+                RETURN COUNT(r) AS countWithFilters
             }
             RETURN {
                 count: countAll,
@@ -58,12 +58,12 @@ public class RecipeService {
                 CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
                 
                 RETURN""" + RecipeMaper.RETURN + """
-                    ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts
+                    ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts,((HasProducts*100)/prodCount) AS Progress
                 """;
         if(!recipeFilters.getProductOrder().isEmpty()){
             q +=" ORDER BY " + recipeFilters.getProductOrder().stream()
                     .map(RecipeProductOrder::getValue)
-                    .collect(Collectors.joining(","));
+                    .collect(Collectors.joining(",")) + " ID(recipe) ASC ";
         }
         q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
         return recipeMaper.resultAsRecipes(q,Map.of(
@@ -85,7 +85,7 @@ public class RecipeService {
                 MATCH (product:PRODUCT) WHERE ID(product) IN $products
                 MERGE (recipe)-[:NEEDS]->(product)
             }
-            CALL{ WITH recipe MATCH (recipe)-[r:HAS_TAG]->(:TAG) DELETE r }            
+            CALL{ WITH recipe MATCH (recipe)-[r:HAS_TAG]->(:TAG) DELETE r }
             CALL{ WITH recipe
                 MATCH (tag:TAG) WHERE ID(tag) IN $tags
                 MERGE (recipe)-[:HAS_TAG]->(tag)
@@ -131,7 +131,6 @@ public class RecipeService {
         String q = """
             MATCH (recipe:RECIPE) WHERE ID(recipe) = $id
             RETURN"""+ RecipeMaper.RETURN;
-        ObjectMapper mapper = new ObjectMapper();
         return recipeMaper.resultAsRecipe(q,Map.of("id",id));
     }
 }
