@@ -63,7 +63,7 @@ public class RecipeService {
         if(!recipeFilters.getProductOrder().isEmpty()){
             q +=" ORDER BY " + recipeFilters.getProductOrder().stream()
                     .map(RecipeProductOrder::getValue)
-                    .collect(Collectors.joining(",")) + " ID(recipe) ASC ";
+                    .collect(Collectors.joining(",")) + ", recipe.id ASC ";
         }
         q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
         return recipeMaper.resultAsRecipes(q,Map.of(
