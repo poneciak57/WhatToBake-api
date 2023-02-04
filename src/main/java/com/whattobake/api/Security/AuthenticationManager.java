@@ -33,13 +33,16 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     }
 
     private Mono<PbUser> getUser(String token){
+//      INFO Auth token Should be as follows "uid|jwtToken";
+        String[] tt = token.split("\\|");
+        String uid = tt[0];
+        String auth = tt[1];
         WebClient client = WebClient.builder()
                 .baseUrl("http://132.226.204.66:82")
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer "+token)
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer "+auth)
                 .build();
-//        TODO change id in link to current user
         return client.get()
-                .uri("/api/collections/users/records/9biezmuz92cxl5q")
+                .uri("/api/collections/users/records/"+uid)
                 .exchangeToMono(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {
                         return response.bodyToMono(PbUser.class);
