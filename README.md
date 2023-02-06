@@ -2,7 +2,7 @@
 
 You have some products but you dont know **what to bake**?
 With this brand new app users will be able to search for recipes and products with advanced filters 
-for example by the products they have, the recipes they like, categories, tags and so much more. App will be accesible in the web browser and on mobiles. 
+for example by the products they have, the recipes they like, categories, tags and so much more. App will be accesible in the web browser and natively on mobiles. 
 
 # :books: Contents
 
