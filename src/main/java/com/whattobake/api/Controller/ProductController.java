@@ -7,6 +7,7 @@ import com.whattobake.api.Model.Product;
 import com.whattobake.api.Service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -30,11 +31,13 @@ public class ProductController {
         return productService.getOneById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
     public Mono<Product> newProduct(@RequestBody ProductInsertRequest productInsertRequest){
         return productService.newProduct(productInsertRequest);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public Mono<Product> updateProduct(@PathVariable("id") Long id,@RequestBody ProductInsertRequest productInsertRequest){
         return productService.updateProduct(ProductUpdateRequest.builder()
@@ -44,6 +47,7 @@ public class ProductController {
                 .build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public Mono<Void> deleteProduct(@PathVariable("id") Long id){
         return productService.deleteProduct(id);

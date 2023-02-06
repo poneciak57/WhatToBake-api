@@ -6,6 +6,7 @@ import com.whattobake.api.Exception.TagNotFoundException;
 import com.whattobake.api.Model.Tag;
 import com.whattobake.api.Service.TagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -29,6 +30,7 @@ public class TagController {
                 .switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public Mono<Tag> updateTag(@PathVariable("id") Long id, @RequestBody TagInsertRequest tagInsertRequest){
         return tagService.updateTag(TagUpdateRequest.builder()
@@ -37,10 +39,12 @@ public class TagController {
                 .build())
                 .switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
     public Mono<Tag> newTag(@RequestBody TagInsertRequest tagInsertRequest){
         return tagService.newTag(tagInsertRequest);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public Mono<Void> deleteTag(@PathVariable("id") Long id){
         return tagService.deleteTag(id);

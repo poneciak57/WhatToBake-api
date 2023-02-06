@@ -9,6 +9,7 @@ import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Service.RecipeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -39,16 +40,19 @@ public class RecipeController {
                 .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+id+" does not exist")));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
     public Mono<Recipe> newRecipe(@RequestBody RecipeInsertRequest recipeInsertRequest){
         return recipeService.newRecipe(recipeInsertRequest);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public Mono<Void> deleteRecipe(@PathVariable("id") Long id){
         return recipeService.deleteRecipe(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public Mono<Recipe> updateRecipe(@PathVariable("id") Long id, @RequestBody RecipeInsertRequest recipeInsertRequest){
         return recipeService.updateRecipe(RecipeUpdateRequest.builder()

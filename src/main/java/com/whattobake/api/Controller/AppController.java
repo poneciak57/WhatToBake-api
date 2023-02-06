@@ -1,7 +1,7 @@
 package com.whattobake.api.Controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -23,7 +23,7 @@ public class AppController {
         return principal;
     }
 
-    @PostAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("test/admin")
     public Mono<Principal> admin(Mono<Principal> principal){
         return principal;
