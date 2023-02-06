@@ -1,7 +1,5 @@
 <img src="./docs/assets/what2bake-baner2.png">
 
-
-
 You have some products but you dont know **what to bake**?
 With this brand new app users will be able to search for recipes and products with advanced filters 
 for example by the products they have, the recipes they like, categories, tags and so much more. App will be accesible in the web browser and on mobiles. 
@@ -10,8 +8,7 @@ for example by the products they have, the recipes they like, categories, tags a
 
 - [Tech stack][tstack]
 - [Docs][docs]
-  - [Auth][auth]
-  - [API][api]
+- [Auth][auth]
 
 
 
@@ -20,43 +17,14 @@ for example by the products they have, the recipes they like, categories, tags a
 
 
 # :clipboard: Docs
-The api is up and running. Can be found here:
-> http://132.226.204.66:81
-
-To test the api u can hit the ping endpoint with get request
-```http
-GET /test/ping
-```
+The api is up and running, docs for it can be found [here](http://132.226.204.66:81/swagger-doc/swagger-ui.html).
+Its simple swagger documentation it will be updated in a future to provide better experience reading it.
 
 ---
 ## :lock: Auth
-I use pocketbase as user service. Its not yet connected to listen for user changes in order to update the main database with new users. 
-
----
-## :globe_with_meridians: API
-
-Here you can find all endpoints that the api provide to the user.
-
-<details>
-<summary>Recipes</summary>
+We use Pocketbase as user provider because it has built in authentication as well as oauth2 support. Moreover, it has library for flutter. 
 
 
-</details>
-<details>
-<summary>Products</summary>
-
-
-</details>
-<details>
-<summary>Categories</summary>
-
-
-</details>
-<details>
-<summary>Tags</summary>
-
-
-</details>
 
 
 Docs are under development 🚧
@@ -64,4 +32,3 @@ Docs are under development 🚧
 [tstack]: #hammer_and_wrench-technologies--tools
 [docs]: #clipboard-docs
 [auth]: #lock-auth
-[api]: #globe_with_meridians-api
