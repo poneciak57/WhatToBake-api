@@ -5,6 +5,7 @@ import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
 import com.whattobake.api.Model.Product;
 import com.whattobake.api.Service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+@Tag(name ="2. Product")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/product")

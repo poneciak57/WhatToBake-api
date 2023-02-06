@@ -7,6 +7,7 @@ import com.whattobake.api.Dto.UpdateDto.RecipeUpdateRequest;
 import com.whattobake.api.Exception.RecipeNotFoundException;
 import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Service.RecipeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+@Tag(name ="1. Recipe")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/recipe")

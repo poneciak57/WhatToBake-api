@@ -1,16 +1,3 @@
-<style>
-ep r { color: Red }
-ep y { color: Yellow }
-ep g { color: Green }
-ep{
-    background-color: #222;
-    padding: 3px 10px;
-    border-radius: 3px;
-    font-size: 16px
-}
-
-</style>
-
 <img src="./docs/assets/what2bake-baner2.png">
 
 
@@ -37,10 +24,9 @@ The api is up and running. Can be found here:
 > http://132.226.204.66:81
 
 To test the api u can hit the ping endpoint with get request
-
-<ep>
-    <g>GET</g> /test/ping
-</ep>
+```http
+GET /test/ping
+```
 
 ---
 ## :lock: Auth
@@ -66,6 +52,7 @@ Here you can find all endpoints that the api provide to the user.
 
 
 </details>
+<details>
 <summary>Tags</summary>
 
 
