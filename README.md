@@ -15,6 +15,14 @@ for example by the products they have, the recipes they like, categories, tags a
 
 # :hammer_and_wrench: Technologies & tools
 
+<div>
+    <img width="55" src="./docs/assets/icons/spring-original.svg">
+    <img width="55" src="./docs/assets/icons/spring_webflux_logo.png">
+    <img height="55" src="./docs/assets/icons/spring_security.png">
+    <img width="55" src="./docs/assets/icons/neo4j.svg">
+    <img width="55" src="./docs/assets/icons/pb.png">
+    <img height="55" src="./docs/assets/icons/swagger.png">
+</div>
 
 # :clipboard: Docs
 The api is up and running, docs for it can be found [here](http://132.226.204.66:81/swagger-doc/swagger-ui.html).
