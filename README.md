@@ -26,7 +26,7 @@ for example by the products they have, the recipes they like, categories, tags a
 
 # :clipboard: Docs
 The api is up and running, docs for it can be found [here](http://132.226.204.66:81/swagger-doc/swagger-ui.html).
-Its simple swagger documentation it will be updated in a future to provide better experience reading it.
+Its simple swagger documentation and will be updated in a future.
 
 ---
 ## :lock: Auth
