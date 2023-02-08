@@ -32,21 +32,17 @@ public class ApiApplication {
 			* TODO listening for users SSE
 			* DONE 1. Connect to get endpoint and establish connection
 			* DONE 2. get connectionId with PB_CONNECT event
-			* 3. send post request to subscribe for users collection
+			* DONE 3. send post request to subscribe for users collection
 			* 4. handle user events
 			* */
 
-//			WebClient client = WebClient.builder()
-//					.baseUrl(pocketbaseURL)
-//					.defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzcwOTE5NTAsImlkIjoiZ25tZ2Z0MDNkbnJvOTYyIiwidHlwZSI6ImFkbWluIn0.LNLB59TRtqXv021pGKoZYJa2n7q4Dec7NKlygmJ4m5U")
-//					.build();
 			var eventStream = userService.connectToRealtime();
 			eventStream.subscribe(
 					content -> {
 						if(Objects.equals(content.event(), "PB_CONNECT")){
-							userService.subscribeToUsers(content.id());
+							userService.subscribeToUsers(content.id()).subscribe();
 						}else{
-//							get pbAction object from event data and process an action
+//							TODO get pbAction object from event data and process an action
 						}
 						log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
 								LocalTime.now(), content.event(), content.id(), content.data());
