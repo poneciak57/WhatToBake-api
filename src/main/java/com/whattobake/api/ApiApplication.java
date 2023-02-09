@@ -19,7 +19,7 @@ import java.util.Objects;
 @Slf4j
 @SpringBootApplication
 @EnableReactiveNeo4jRepositories
-@OpenAPIDefinition(info = @Info(title = "What2Bake", version = "0.1", description = "Documentation APIs v0."))
+@OpenAPIDefinition(info = @Info(title = "What2Bake", version = "0.2", description = "Documentation APIs v0."))
 public class ApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ApiApplication.class, args);
@@ -43,10 +43,11 @@ public class ApiApplication {
 						}else{
 							try {
 								var action = mapper.readValue(content.data(), PbAction.class);
+								User u = User.fromPBAction(action.getRecord());
 								switch (action.getAction()){
-									case create -> userService.create();
-									case update -> userService.update();
-									case delete -> userService.delete();
+									case create -> userService.create(u).subscribe();
+									case update -> userService.update(u).subscribe();
+									case delete -> userService.delete(u).subscribe();
 								}
 								log.info(User.fromPBAction(action.getRecord()).toString());
 							} catch (JsonProcessingException e) {
@@ -54,7 +55,7 @@ public class ApiApplication {
 							}
 						}
 					},
-					error -> log.info("Error receiving SSE: ", error),
+					error -> log.error("Error receiving SSE: ", error),
 					() -> log.info("Completed!!!"));
 		};
 	}
