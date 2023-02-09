@@ -1,5 +1,9 @@
 package com.whattobake.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.whattobake.api.Dto.SseDto.PbAction;
+import com.whattobake.api.Model.User;
 import com.whattobake.api.Service.UserService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -10,7 +14,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.neo4j.repository.config.EnableReactiveNeo4jRepositories;
 
-import java.time.LocalTime;
 import java.util.Objects;
 
 @Slf4j
@@ -27,30 +30,32 @@ public class ApiApplication {
 			UserService userService
 	){
 		return args -> {
-
-			/*
-			* TODO listening for users SSE
-			* DONE 1. Connect to get endpoint and establish connection
-			* DONE 2. get connectionId with PB_CONNECT event
-			* DONE 3. send post request to subscribe for users collection
-			* 4. handle user events
-			* */
-
+			// PocketBase User events handling //
+			ObjectMapper mapper = new ObjectMapper();
 			var eventStream = userService.connectToRealtime();
 			eventStream.subscribe(
 					content -> {
 						if(Objects.equals(content.event(), "PB_CONNECT")){
-							userService.subscribeToUsers(content.id()).subscribe();
+							log.info("Connecting to PB realtime");
+							userService.subscribeToUsers(content.id())
+									.doOnSuccess(a -> log.info("Successfully established connection with PB realtime"))
+									.subscribe();
 						}else{
-//							TODO get pbAction object from event data and process an action
+							try {
+								var action = mapper.readValue(content.data(), PbAction.class);
+								switch (action.getAction()){
+									case create -> userService.create();
+									case update -> userService.update();
+									case delete -> userService.delete();
+								}
+								log.info(User.fromPBAction(action.getRecord()).toString());
+							} catch (JsonProcessingException e) {
+								log.error("Error while handling an event from PocketBase");
+							}
 						}
-						log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
-								LocalTime.now(), content.event(), content.id(), content.data());
 					},
 					error -> log.info("Error receiving SSE: ", error),
 					() -> log.info("Completed!!!"));
 		};
 	}
-
-
 }

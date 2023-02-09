@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class PbAction {
-    private String action;
-    private PbActionRecord record;
+    private com.whattobake.api.Enum.PbAction action;
+    private Map<String,Object> record;
 }
