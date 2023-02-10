@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.security.Principal;
+
 @Tag(name ="5. Recipes likes")
 @RestController
 @RequestMapping("/likes")
@@ -19,8 +21,9 @@ public class LikesController {
     private final RecipeService recipeService;
 
     @GetMapping("/all")
-    public Flux<Recipe> getLiked(){
-//        TODO get liked recipes
+    public Flux<Recipe> getLiked(Mono<Principal> principal){
+//        return principal.map(p -> recipeService.getLikedRecipes(p.))
+//        return recipeService.getLikedRecipes();
         return null;
     }
     @PostMapping("/{recipeId}")

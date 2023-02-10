@@ -1,6 +1,7 @@
 package com.whattobake.api.Model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.whattobake.api.Dto.SecurityDto.PbUser;
 import com.whattobake.api.Enum.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,16 @@ public class User {
                 .name((String) map.get("name"))
                 .username((String) map.get("username"))
                 .roles((List<UserRole>) map.get("roles"))
+                .build();
+    }
+
+    public static User fromPbUser(PbUser pbUser) {
+        return User.builder()
+                .pbId(pbUser.getId())
+                .username(pbUser.getUsername())
+                .name(pbUser.getName())
+                .email(pbUser.getEmail())
+                .roles(pbUser.getRoles())
                 .build();
     }
 }

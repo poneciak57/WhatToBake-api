@@ -50,6 +50,7 @@ public class RecipeService {
                                 .build()
                 ).first();
     }
+
     public Flux<Recipe> getAllRecipes(RecipeFilters recipeFilters){
         String q = """
                 MATCH (recipe:RECIPE)
@@ -71,6 +72,20 @@ public class RecipeService {
                 "tags",recipeFilters.getTags(),
                 "tags_size",recipeFilters.getTags().size()
         ));
+    }
+    public Mono<Recipe> getOneById(Long id) {
+        String q = """
+            MATCH (recipe:RECIPE) WHERE ID(recipe) = $id
+            RETURN"""+ RecipeMaper.RETURN;
+        return recipeMaper.resultAsRecipe(q,Map.of("id",id));
+    }
+
+    public Flux<Recipe> getLikedRecipes(String pbUid){
+        String q = """
+            MATCH (u:USER)-[:LIKES]->(recipe:RECIPE)
+            WHERE u.pbId = $pbId
+            RETURN"""+ RecipeMaper.RETURN;
+        return recipeMaper.resultAsRecipes(q,Map.of("pbId",pbUid));
     }
 
     public Mono<Recipe> updateRecipe(RecipeUpdateRequest recipeUpdateRequest){
@@ -125,12 +140,5 @@ public class RecipeService {
                 "products", recipeInsertRequest.getProducts(),
                 "tags", recipeInsertRequest.getTags()
         ));
-    }
-
-    public Mono<Recipe> getOneById(Long id) {
-        String q = """
-            MATCH (recipe:RECIPE) WHERE ID(recipe) = $id
-            RETURN"""+ RecipeMaper.RETURN;
-        return recipeMaper.resultAsRecipe(q,Map.of("id",id));
     }
 }

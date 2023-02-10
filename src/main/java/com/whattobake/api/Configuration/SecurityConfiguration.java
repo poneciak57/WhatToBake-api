@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 import reactor.core.publisher.Mono;
 
 @Configuration
@@ -30,7 +31,7 @@ public class SecurityConfiguration {
                 ).accessDeniedHandler((swe, e) ->
                         Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN))
                 ).and()
-
+                .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .csrf().disable()
                 .formLogin().disable()
                 .httpBasic().disable()

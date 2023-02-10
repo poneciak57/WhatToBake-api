@@ -30,7 +30,8 @@ public class UserService {
         return WebClient.create(pbURL).get()
                 .uri("/api/realtime")
                 .retrieve()
-                .bodyToFlux(type);
+                .bodyToFlux(type)
+                .repeat();
     }
 
     public Mono<String> subscribeToUsers(String clientId){

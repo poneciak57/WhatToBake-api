@@ -33,10 +33,13 @@ public class ApiApplication {
 			// PocketBase User events handling //
 			ObjectMapper mapper = new ObjectMapper();
 			var eventStream = userService.connectToRealtime();
-			eventStream.subscribe(
+
+			eventStream
+					.subscribe(
 					content -> {
 						if(Objects.equals(content.event(), "PB_CONNECT")){
 							log.info("Connecting to PB realtime");
+							log.info("conn id:"+content.id());
 							userService.subscribeToUsers(content.id())
 									.doOnSuccess(a -> log.info("Successfully established connection with PB realtime"))
 									.subscribe();
@@ -56,7 +59,7 @@ public class ApiApplication {
 						}
 					},
 					error -> log.error("Error receiving SSE: ", error),
-					() -> log.info("Completed!!!"));
+					() -> log.error("Stopped listening for pocketbase user events!!!"));
 		};
 	}
 }

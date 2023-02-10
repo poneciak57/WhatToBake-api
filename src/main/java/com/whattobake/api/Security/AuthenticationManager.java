@@ -1,5 +1,6 @@
 package com.whattobake.api.Security;
 
+import com.whattobake.api.Dto.SecurityDto.PbUser;
 import com.whattobake.api.Model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -23,9 +24,18 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
+//        INFO Auth token Should be as follows "uid|jwtToken";
         String authToken = authentication.getCredentials().toString();
-        return getUser(authToken)
+        String token;
+        String uid;
+        try {
+            String[] tt = authToken.split("\\|");
+            uid = tt[0];
+            token = tt[1];
+        } catch (Exception e) { return Mono.empty(); }
+        return getUser(uid,token)
                 .switchIfEmpty(Mono.empty())
+                .map(User::fromPbUser)
                 .map(u -> {
                     var at = new UsernamePasswordAuthenticationToken(u.getName(),authToken,
                             u.getRoles().stream().map(r -> new SimpleGrantedAuthority(r.toString())).collect(Collectors.toList())
@@ -35,29 +45,18 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                 });
     }
 
-    private Mono<User> getUser(String token) {
-//      INFO Auth token Should be as follows "uid|jwtToken";
-        String auth;
-        String uid;
-        try {
-            String[] tt = token.split("\\|");
-            uid = tt[0];
-            auth = tt[1];
-        } catch (Exception e) {
-            return Mono.empty();
-        }
+    private Mono<PbUser> getUser(String uid,String token) {
         WebClient client = WebClient.builder()
                 .baseUrl(pocketbaseURL)
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + auth)
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .build();
         return client.get()
                 .uri("/api/collections/users/records/" + uid)
                 .exchangeToMono(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {
-                        return response.bodyToMono(User.class);
-                    } else {
-                        return Mono.empty();
+                        return response.bodyToMono(PbUser.class);
                     }
+                    return Mono.empty();
                 });
     }
 }
