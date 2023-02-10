@@ -1,6 +1,5 @@
 package com.whattobake.api.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Dto.InsertDto.RecipeInsertRequest;
@@ -30,24 +29,25 @@ public class RecipeService {
 //    private final RecipeRepository recipeRepository;
     public Mono<RecipeInfo> info(RecipeFilters recipeFilters){
         String q = """
-            CALL { MATCH (r:recipe) RETURN COUNT(r) AS countAll }
+            CALL { MATCH (recipe:RECIPE) RETURN COUNT(recipe) AS countAll }
             CALL {
-                MATCH (r:recipe)
+                MATCH (recipe:RECIPE)
                 """ + recipeFilters.getTagOption().getValue() + """
-                RETURN COUNT(r) AS countWithFilters
+                RETURN COUNT(recipe) AS countWithFilters
             }
-            RETURN {
-                count: countAll,
-                countWithFilters: countWithFilters
-            }""";
-        ObjectMapper mapper = new ObjectMapper();
+            RETURN countAll as count, countWithFilters
+            """;
         return client.query(q)
                 .bindAll(Map.of(
                         "tags",recipeFilters.getTags(),
-                        "tags_size",recipeFilters.getTags().size()
+                        "tags_size", recipeFilters.getTags().size()
                 ))
                 .fetchAs(RecipeInfo.class)
-                .mappedBy((ts,r)-> mapper.convertValue(r.get("recipe").asMap(), RecipeInfo.class)
+                .mappedBy((ts,r)->
+                        RecipeInfo.builder()
+                                .count(r.get("count").asLong())
+                                .countWithFilters(r.get("countWithFilters").asLong())
+                                .build()
                 ).first();
     }
     public Flux<Recipe> getAllRecipes(RecipeFilters recipeFilters){
@@ -56,7 +56,7 @@ public class RecipeService {
                 """+ recipeFilters.getTagOption().getValue() +"""
                 CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) RETURN COUNT(p) AS prodCount }
                 CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
-                
+                CALL { WITH recipe MATCH (recipe)<-[l:LIKES]-(:USER) RETURN COUNT(l) as likes }
                 RETURN""" + RecipeMaper.RETURN + """
                     ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts,((HasProducts*100)/prodCount) AS Progress
                 """;

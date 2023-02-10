@@ -1,7 +1,6 @@
 package com.whattobake.api.Mapers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Model.Recipe;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
@@ -20,7 +19,7 @@ public class RecipeMaper {
         recipe{
             id: ID(recipe),
             .*,
-            likes:0,
+            likes: size([(recipe)<-[l:LIKES]-(:USER) | l{]),
             products: [ (recipe)-[:NEEDS]->(p:PRODUCT)-[:HAS_CATEGORY]->(c:CATEGORY) | p{
                 id: ID(p),
                 .*,
