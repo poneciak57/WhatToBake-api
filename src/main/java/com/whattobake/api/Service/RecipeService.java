@@ -8,6 +8,7 @@ import com.whattobake.api.Enum.RecipeProductOrder;
 import com.whattobake.api.Mapers.RecipeMaper;
 import com.whattobake.api.Model.Recipe;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
@@ -20,9 +21,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RecipeService {
-
-//    TODO przepisac wszystko na maper dodac tagi
-    private final Long RECIPES_PER_PAGE = 20L;
+    @Value("${w2b.recipes.pageCount}")
+    private Long RECIPES_PER_PAGE;
     private final ReactiveNeo4jTemplate template;
     private final ReactiveNeo4jClient client;
     private final RecipeMaper recipeMaper;
