@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 
-@Tag(name ="5. Tests")
+@Tag(name ="6. Tests")
 @RestController
 public class AppController {
 
