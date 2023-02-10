@@ -1,6 +1,6 @@
 package com.whattobake.api.Security;
 
-import lombok.extern.slf4j.Slf4j;
+import com.whattobake.api.Model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 
 @Component
-@Slf4j
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 
     @Value("${pocketbase.url}")
@@ -25,19 +24,18 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         String authToken = authentication.getCredentials().toString();
-        log.info("AuthManager auth proc");
         return getUser(authToken)
                 .switchIfEmpty(Mono.empty())
                 .map(u -> {
                     var at = new UsernamePasswordAuthenticationToken(u.getName(),authToken,
-                            u.getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
+                            u.getRoles().stream().map(r -> new SimpleGrantedAuthority(r.toString())).collect(Collectors.toList())
                     );
                     at.setDetails(u);
                     return at;
                 });
     }
 
-    private Mono<PbUser> getUser(String token) {
+    private Mono<User> getUser(String token) {
 //      INFO Auth token Should be as follows "uid|jwtToken";
         String auth;
         String uid;
@@ -56,7 +54,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                 .uri("/api/collections/users/records/" + uid)
                 .exchangeToMono(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {
-                        return response.bodyToMono(PbUser.class);
+                        return response.bodyToMono(User.class);
                     } else {
                         return Mono.empty();
                     }
