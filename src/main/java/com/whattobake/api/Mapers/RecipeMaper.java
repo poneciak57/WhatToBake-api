@@ -19,7 +19,7 @@ public class RecipeMaper {
         recipe{
             id: ID(recipe),
             .*,
-            likes: size([(recipe)<-[l:LIKES]-(:USER) | l{]),
+            likes: size([(recipe)<-[l:LIKES]-(:USER) | {}]),
             products: [ (recipe)-[:NEEDS]->(p:PRODUCT)-[:HAS_CATEGORY]->(c:CATEGORY) | p{
                 id: ID(p),
                 .*,

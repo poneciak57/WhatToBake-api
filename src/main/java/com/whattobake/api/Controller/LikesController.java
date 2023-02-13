@@ -27,13 +27,13 @@ public class LikesController {
         return null;
     }
     @PostMapping("/{recipeId}")
-    public Mono<Recipe> like(@PathVariable Long recipeId){
+    public Mono<Recipe> like(@PathVariable Mono<Long> recipeId){
 //        TODO like recipe
         return null;
     }
 
     @DeleteMapping("/{recipeId}")
-    public Mono<Recipe> unlike(@PathVariable Long recipeId){
+    public Mono<Recipe> unlike(@PathVariable Mono<Long> recipeId){
 //        TODO unlike recipe
         return null;
     }

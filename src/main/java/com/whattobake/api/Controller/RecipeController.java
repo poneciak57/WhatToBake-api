@@ -25,44 +25,44 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @GetMapping("/info")
-    public Mono<RecipeInfo> info(@RequestBody Optional<RecipeFilters> recipeFilters){
-        return recipeService.info(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
+    public Mono<RecipeInfo> info(@RequestBody Mono<Optional<RecipeFilters>> recipeFilters){
+        return recipeFilters.map(r -> r.orElse(new RecipeFilters()).fillDefaults()).flatMap(recipeService::info);
     }
 
     @GetMapping("/")
-    public Flux<Recipe> getAllRecipes(@RequestBody Optional<RecipeFilters> recipeFilters){
-        return recipeService.getAllRecipes(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
+    public Flux<Recipe> getAllRecipes(@RequestBody Mono<Optional<RecipeFilters>> recipeFilters){
+        return recipeFilters.map(r -> r.orElse(new RecipeFilters()).fillDefaults()).flatMapMany(recipeService::getAllRecipes);
     }
 
     @GetMapping("/{id}")
-    public Mono<Recipe> getOneById(@PathVariable("id") Long id){
-        return recipeService.getOneById(id)
+    public Mono<Recipe> getOneById(@PathVariable("id") Mono<Long> id){
+        return id.flatMap(recipeService::getOneById)
                 .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+id+" does not exist")));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
-    public Mono<Recipe> newRecipe(@RequestBody RecipeInsertRequest recipeInsertRequest){
-        return recipeService.newRecipe(recipeInsertRequest);
+    public Mono<Recipe> newRecipe(@RequestBody Mono<RecipeInsertRequest> recipeInsertRequest){
+        return recipeInsertRequest.flatMap(recipeService::newRecipe);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteRecipe(@PathVariable("id") Long id){
-        return recipeService.deleteRecipe(id);
+    public Mono<Void> deleteRecipe(@PathVariable("id") Mono<Long> id){
+        return id.flatMap(recipeService::deleteRecipe);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Mono<Recipe> updateRecipe(@PathVariable("id") Long id, @RequestBody RecipeInsertRequest recipeInsertRequest){
-        return recipeService.updateRecipe(RecipeUpdateRequest.builder()
-                        .id(id)
-                        .title(recipeInsertRequest.getTitle())
-                        .image(recipeInsertRequest.getImage())
-                        .link(recipeInsertRequest.getLink())
-                        .products(recipeInsertRequest.getProducts())
-                        .tags(recipeInsertRequest.getTags())
-                .build())
+    public Mono<Recipe> updateRecipe(@PathVariable("id") Mono<Long> id, @RequestBody Mono<RecipeInsertRequest> recipeInsertRequest){
+        return Mono.zip(id,recipeInsertRequest).flatMap(data -> recipeService.updateRecipe(RecipeUpdateRequest.builder()
+                .id(data.getT1())
+                .title(data.getT2().getTitle())
+                .image(data.getT2().getImage())
+                .link(data.getT2().getLink())
+                .products(data.getT2().getProducts())
+                .tags(data.getT2().getTags())
+                .build()))
                 .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+id+" does not exist")));
     }
 }
