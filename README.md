@@ -2,7 +2,25 @@
 
 You have some products but you dont know **what to bake**?
 With this brand new app users will be able to search for recipes and products with advanced filters 
-for example by the products they have, the recipes they like, categories, tags and so much more. App will be accesible in the web browser and natively on mobiles. 
+for example by the products they have, the recipes they like, categories, tags and so much more. App will be accessible in the web browser and natively on mobiles.
+
+[//]: # (### Code )
+
+[//]: # (- [Api]&#40;https://github.com/poneciak57/WhatToBake-api&#41;)
+
+[//]: # (- [Mobile Client]&#40;https://github.com/MineSwek/What2Bake-MobileApp&#41;)
+
+[//]: # (- Web Client &#40;Coming soon&#41;)
+
+[//]: # ()
+[//]: # (### Deploys)
+
+[//]: # (- [Api]&#40;http://132.226.204.66:81/swagger-doc/swagger-ui.html&#41;)
+
+[//]: # (- Mobile Client &#40;Coming soon&#41;)
+
+[//]: # (- Web Client &#40;Coming soon&#41;)
+
 
 # :books: Contents
 
@@ -32,8 +50,6 @@ Its simple swagger documentation and will be updated in a future.
 ---
 ### :lock: Auth
 We use Pocketbase as user provider because it has built in authentication as well as oauth2 support. Moreover, it has library for flutter. 
-
-
 
 
 Docs are under development 🚧
