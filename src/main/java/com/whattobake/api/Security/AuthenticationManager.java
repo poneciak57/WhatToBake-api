@@ -1,5 +1,6 @@
 package com.whattobake.api.Security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whattobake.api.Dto.SecurityDto.PbUser;
 import com.whattobake.api.Model.User;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Base64;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -24,16 +27,12 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
-//        INFO Auth token Should be as follows "uid|jwtToken";
         String authToken = authentication.getCredentials().toString();
-        String token;
         String uid;
         try {
-            String[] tt = authToken.split("\\|");
-            uid = tt[0];
-            token = tt[1];
+            uid = (String) (new ObjectMapper()).readValue(new String(Base64.getUrlDecoder().decode(authToken.split("\\.")[1])), Map.class).get("id");
         } catch (Exception e) { return Mono.empty(); }
-        return getUser(uid,token)
+        return getUser(uid,authToken)
                 .switchIfEmpty(Mono.empty())
                 .map(User::fromPbUser)
                 .map(u -> {
