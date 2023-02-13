@@ -3,6 +3,7 @@ package com.whattobake.api.Controller;
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
+import com.whattobake.api.Exception.ProductNotFoundException;
 import com.whattobake.api.Model.Product;
 import com.whattobake.api.Service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,34 +24,37 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/")
-    public Flux<Product> getAllProducts(@RequestBody Optional<ProductFilters> productFilters){
-        return productService.getAllProducts(productFilters.orElse(new ProductFilters()).fillDefaults());
+    public Flux<Product> getAllProducts(@RequestBody Mono<Optional<ProductFilters>> productFilters){
+        return productFilters.map(p -> p.orElse(new ProductFilters()).fillDefaults()).flatMapMany(productService::getAllProducts);
     }
     @GetMapping("/{id}")
-    public Mono<Product> getOneById(@PathVariable("id") Long id){
-        return productService.getOneById(id);
+    public Mono<Product> getOneById(@PathVariable("id") Mono<Long> id){
+        return id.flatMap(productService::getOneById)
+                .switchIfEmpty(Mono.error(new ProductNotFoundException("Recipe with given id: "+id+" does not exist")));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
-    public Mono<Product> newProduct(@RequestBody ProductInsertRequest productInsertRequest){
-        return productService.newProduct(productInsertRequest);
+    public Mono<Product> newProduct(@RequestBody Mono<ProductInsertRequest> productInsertRequest){
+        return productInsertRequest.flatMap(productService::newProduct);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Mono<Product> updateProduct(@PathVariable("id") Long id,@RequestBody ProductInsertRequest productInsertRequest){
-        return productService.updateProduct(ProductUpdateRequest.builder()
-                        .id(id)
-                        .name(productInsertRequest.getName())
-                        .category(productInsertRequest.getCategory())
-                .build());
+    public Mono<Product> updateProduct(@PathVariable("id") Mono<Long> id,@RequestBody Mono<ProductInsertRequest> productInsertRequest){
+        return Mono.zip(id,productInsertRequest).map(data -> ProductUpdateRequest.builder()
+                .id(data.getT1())
+                .name(data.getT2().getName())
+                .category(data.getT2().getCategory())
+                .build())
+                .flatMap(productService::updateProduct)
+                .switchIfEmpty(Mono.error(new ProductNotFoundException("Recipe with given id: "+id+" does not exist")));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteProduct(@PathVariable("id") Long id){
-        return productService.deleteProduct(id);
+    public Mono<Void> deleteProduct(@PathVariable("id") Mono<Long> id){
+        return id.flatMap(productService::deleteProduct);
     }
 
 }

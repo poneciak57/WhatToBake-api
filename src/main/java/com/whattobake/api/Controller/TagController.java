@@ -25,28 +25,27 @@ public class TagController {
     }
 
     @GetMapping("/{id}")
-    public Mono<Tag> oneById(@PathVariable("id") Long id){
-        return tagService.oneById(id)
-                .switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
+    public Mono<Tag> oneById(@PathVariable("id") Mono<Long> id){
+        return id.flatMap(tagService::oneById).switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Mono<Tag> updateTag(@PathVariable("id") Long id, @RequestBody TagInsertRequest tagInsertRequest){
-        return tagService.updateTag(TagUpdateRequest.builder()
-                .id(id)
-                .name(tagInsertRequest.getName())
-                .build())
+    public Mono<Tag> updateTag(@PathVariable("id") Mono<Long> id, @RequestBody Mono<TagInsertRequest> tagInsertRequest){
+        return Mono.zip(id,tagInsertRequest).flatMap(data -> tagService.updateTag(TagUpdateRequest.builder()
+                .id(data.getT1())
+                .name(data.getT2().getName())
+                .build()))
                 .switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
-    public Mono<Tag> newTag(@RequestBody TagInsertRequest tagInsertRequest){
-        return tagService.newTag(tagInsertRequest);
+    public Mono<Tag> newTag(@RequestBody Mono<TagInsertRequest> tagInsertRequest){
+        return tagInsertRequest.flatMap(tagService::newTag);
     }
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteTag(@PathVariable("id") Long id){
-        return tagService.deleteTag(id);
+    public Mono<Void> deleteTag(@PathVariable("id") Mono<Long> id){
+        return id.flatMap(tagService::deleteTag);
     }
 }

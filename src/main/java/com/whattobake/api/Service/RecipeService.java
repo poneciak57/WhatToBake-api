@@ -1,6 +1,5 @@
 package com.whattobake.api.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Dto.InsertDto.RecipeInsertRequest;
@@ -9,6 +8,7 @@ import com.whattobake.api.Enum.RecipeProductOrder;
 import com.whattobake.api.Mapers.RecipeMaper;
 import com.whattobake.api.Model.Recipe;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
@@ -21,42 +21,43 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RecipeService {
-
-//    TODO przepisac wszystko na maper dodac tagi
-    private final Long RECIPES_PER_PAGE = 20L;
+    @Value("${w2b.recipes.pageCount}")
+    private Long RECIPES_PER_PAGE;
     private final ReactiveNeo4jTemplate template;
     private final ReactiveNeo4jClient client;
     private final RecipeMaper recipeMaper;
 //    private final RecipeRepository recipeRepository;
     public Mono<RecipeInfo> info(RecipeFilters recipeFilters){
         String q = """
-            CALL { MATCH (r:recipe) RETURN COUNT(r) AS countAll }
+            CALL { MATCH (recipe:RECIPE) RETURN COUNT(recipe) AS countAll }
             CALL {
-                MATCH (r:recipe)
+                MATCH (recipe:RECIPE)
                 """ + recipeFilters.getTagOption().getValue() + """
-                RETURN COUNT(r) AS countWithFilters
+                RETURN COUNT(recipe) AS countWithFilters
             }
-            RETURN {
-                count: countAll,
-                countWithFilters: countWithFilters
-            }""";
-        ObjectMapper mapper = new ObjectMapper();
+            RETURN countAll as count, countWithFilters
+            """;
         return client.query(q)
                 .bindAll(Map.of(
                         "tags",recipeFilters.getTags(),
-                        "tags_size",recipeFilters.getTags().size()
+                        "tags_size", recipeFilters.getTags().size()
                 ))
                 .fetchAs(RecipeInfo.class)
-                .mappedBy((ts,r)-> mapper.convertValue(r.get("recipe").asMap(), RecipeInfo.class)
+                .mappedBy((ts,r)->
+                        RecipeInfo.builder()
+                                .count(r.get("count").asLong())
+                                .countWithFilters(r.get("countWithFilters").asLong())
+                                .build()
                 ).first();
     }
+
     public Flux<Recipe> getAllRecipes(RecipeFilters recipeFilters){
         String q = """
                 MATCH (recipe:RECIPE)
                 """+ recipeFilters.getTagOption().getValue() +"""
                 CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) RETURN COUNT(p) AS prodCount }
                 CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
-                
+                CALL { WITH recipe MATCH (recipe)<-[l:LIKES]-(:USER) RETURN COUNT(l) as likes }
                 RETURN""" + RecipeMaper.RETURN + """
                     ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts,((HasProducts*100)/prodCount) AS Progress
                 """;
@@ -71,6 +72,20 @@ public class RecipeService {
                 "tags",recipeFilters.getTags(),
                 "tags_size",recipeFilters.getTags().size()
         ));
+    }
+    public Mono<Recipe> getOneById(Long id) {
+        String q = """
+            MATCH (recipe:RECIPE) WHERE ID(recipe) = $id
+            RETURN"""+ RecipeMaper.RETURN;
+        return recipeMaper.resultAsRecipe(q,Map.of("id",id));
+    }
+
+    public Flux<Recipe> getLikedRecipes(String pbUid){
+        String q = """
+            MATCH (u:USER)-[:LIKES]->(recipe:RECIPE)
+            WHERE u.pbId = $pbId
+            RETURN"""+ RecipeMaper.RETURN;
+        return recipeMaper.resultAsRecipes(q,Map.of("pbId",pbUid));
     }
 
     public Mono<Recipe> updateRecipe(RecipeUpdateRequest recipeUpdateRequest){
@@ -125,12 +140,5 @@ public class RecipeService {
                 "products", recipeInsertRequest.getProducts(),
                 "tags", recipeInsertRequest.getTags()
         ));
-    }
-
-    public Mono<Recipe> getOneById(Long id) {
-        String q = """
-            MATCH (recipe:RECIPE) WHERE ID(recipe) = $id
-            RETURN"""+ RecipeMaper.RETURN;
-        return recipeMaper.resultAsRecipe(q,Map.of("id",id));
     }
 }
