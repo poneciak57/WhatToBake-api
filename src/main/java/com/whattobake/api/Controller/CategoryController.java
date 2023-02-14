@@ -1,7 +1,7 @@
 package com.whattobake.api.Controller;
 
 import com.whattobake.api.Dto.InsertDto.CategoryInsertRequest;
-import com.whattobake.api.Exception.ProductNotFoundException;
+import com.whattobake.api.Exception.CategoryNotFoundException;
 import com.whattobake.api.Model.Category;
 import com.whattobake.api.Service.CategoryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +27,7 @@ public class CategoryController {
     @GetMapping("/{id}")
     public Mono<Category> getOneById(@PathVariable("id") Mono<Long> id){
         return id.flatMap(categoryService::getOneById)
-                .switchIfEmpty(Mono.error(new ProductNotFoundException("Recipe with given id: "+id+" does not exist")));
+                .switchIfEmpty(Mono.error(new CategoryNotFoundException("Category with given id: "+id+" does not exist")));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -42,7 +42,8 @@ public class CategoryController {
     public Mono<Category> updateCategory(@PathVariable("id") Mono<Long> id,@RequestBody Mono<CategoryInsertRequest> categoryInsertRequest) {
         return Mono.zip(id,categoryInsertRequest)
                 .map(data -> data.getT2().toUpdateRequest(data.getT1()))
-                .flatMap(categoryService::updateCategory);
+                .flatMap(categoryService::updateCategory)
+                .switchIfEmpty(Mono.error(new CategoryNotFoundException("Category with given id: "+id+" does not exist")));
     }
 //    Delete category
     @PreAuthorize("hasRole('ADMIN')")

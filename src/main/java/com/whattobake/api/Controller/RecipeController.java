@@ -3,7 +3,6 @@ package com.whattobake.api.Controller;
 import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Dto.InsertDto.RecipeInsertRequest;
-import com.whattobake.api.Dto.UpdateDto.RecipeUpdateRequest;
 import com.whattobake.api.Exception.RecipeNotFoundException;
 import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Service.RecipeService;
@@ -55,14 +54,9 @@ public class RecipeController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public Mono<Recipe> updateRecipe(@PathVariable("id") Mono<Long> id, @RequestBody Mono<RecipeInsertRequest> recipeInsertRequest){
-        return Mono.zip(id,recipeInsertRequest).flatMap(data -> recipeService.updateRecipe(RecipeUpdateRequest.builder()
-                .id(data.getT1())
-                .title(data.getT2().getTitle())
-                .image(data.getT2().getImage())
-                .link(data.getT2().getLink())
-                .products(data.getT2().getProducts())
-                .tags(data.getT2().getTags())
-                .build()))
+        return Mono.zip(id,recipeInsertRequest)
+                .map(data -> data.getT2().toUpdateRequest(data.getT1()))
+                .flatMap(recipeService::updateRecipe)
                 .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+id+" does not exist")));
     }
 }

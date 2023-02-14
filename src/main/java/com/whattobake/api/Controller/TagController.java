@@ -1,7 +1,6 @@
 package com.whattobake.api.Controller;
 
 import com.whattobake.api.Dto.InsertDto.TagInsertRequest;
-import com.whattobake.api.Dto.UpdateDto.TagUpdateRequest;
 import com.whattobake.api.Exception.TagNotFoundException;
 import com.whattobake.api.Model.Tag;
 import com.whattobake.api.Service.TagService;
@@ -32,10 +31,9 @@ public class TagController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public Mono<Tag> updateTag(@PathVariable("id") Mono<Long> id, @RequestBody Mono<TagInsertRequest> tagInsertRequest){
-        return Mono.zip(id,tagInsertRequest).flatMap(data -> tagService.updateTag(TagUpdateRequest.builder()
-                .id(data.getT1())
-                .name(data.getT2().getName())
-                .build()))
+        return Mono.zip(id,tagInsertRequest)
+                .map(data -> data.getT2().toUpdateRequest(data.getT1()))
+                .flatMap(tagService::updateTag)
                 .switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
     }
     @PreAuthorize("hasRole('ADMIN')")

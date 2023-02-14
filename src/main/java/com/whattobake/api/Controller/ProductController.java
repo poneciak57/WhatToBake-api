@@ -2,7 +2,6 @@ package com.whattobake.api.Controller;
 
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
-import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
 import com.whattobake.api.Exception.ProductNotFoundException;
 import com.whattobake.api.Model.Product;
 import com.whattobake.api.Service.ProductService;
@@ -42,11 +41,8 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public Mono<Product> updateProduct(@PathVariable("id") Mono<Long> id,@RequestBody Mono<ProductInsertRequest> productInsertRequest){
-        return Mono.zip(id,productInsertRequest).map(data -> ProductUpdateRequest.builder()
-                .id(data.getT1())
-                .name(data.getT2().getName())
-                .category(data.getT2().getCategory())
-                .build())
+        return Mono.zip(id,productInsertRequest)
+                .map(data -> data.getT2().toUpdateRequest(data.getT1()))
                 .flatMap(productService::updateProduct)
                 .switchIfEmpty(Mono.error(new ProductNotFoundException("Recipe with given id: "+id+" does not exist")));
     }

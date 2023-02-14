@@ -3,8 +3,8 @@ package com.whattobake.api.Service;
 import com.whattobake.api.Dto.InsertDto.TagInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.TagUpdateRequest;
 import com.whattobake.api.Model.Tag;
+import com.whattobake.api.Repository.TagRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,26 +13,21 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class TagService {
 
-    private final ReactiveNeo4jTemplate template;
+    private final TagRepository tagRepository;
     public Flux<Tag> allTags() {
-        return template.findAll(Tag.class);
+        return tagRepository.findAll();
     }
     public Mono<Tag> oneById(Long id){
-        return template.findById(id,Tag.class);
+        return tagRepository.findById(id);
     }
 
     public Mono<Tag> updateTag(TagUpdateRequest tagUpdateRequest){
-        return template.save(Tag.builder()
-                .id(tagUpdateRequest.getId())
-                .name(tagUpdateRequest.getName())
-                .build());
+        return tagRepository.save(tagUpdateRequest.toModel());
     }
     public Mono<Void> deleteTag(Long id){
-        return template.deleteById(id,Tag.class);
+        return tagRepository.deleteById(id);
     }
     public Mono<Tag> newTag(TagInsertRequest tagInsertRequest){
-        return template.save(Tag.builder()
-                .name(tagInsertRequest.getName())
-                .build());
+        return tagRepository.save(tagInsertRequest.toModel());
     }
 }
