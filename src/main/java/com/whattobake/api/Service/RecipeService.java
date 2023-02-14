@@ -5,6 +5,7 @@ import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Dto.InsertDto.RecipeInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.RecipeUpdateRequest;
 import com.whattobake.api.Enum.RecipeProductOrder;
+import com.whattobake.api.Mapers.MapperQuery;
 import com.whattobake.api.Mapers.RecipeMaper;
 import com.whattobake.api.Model.Recipe;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +68,7 @@ public class RecipeService {
                     .collect(Collectors.joining(",")) + ", recipe.id ASC ";
         }
         q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
-        return recipeMaper.resultAsRecipes(q,Map.of(
+        return recipeMaper.resultAsFlux(MapperQuery.builder().query(q).rowName(RecipeMaper.ROW_NAME).build(),Map.of(
                 "products",recipeFilters.getProducts(),
                 "tags",recipeFilters.getTags(),
                 "tags_size",recipeFilters.getTags().size()
@@ -76,16 +77,16 @@ public class RecipeService {
     public Mono<Recipe> getOneById(Long id) {
         String q = """
             MATCH (recipe:RECIPE) WHERE ID(recipe) = $id
-            RETURN"""+ RecipeMaper.RETURN;
-        return recipeMaper.resultAsRecipe(q,Map.of("id",id));
+            RETURN""";
+        return recipeMaper.resultAsMono(RecipeMaper.getMapperQuery(q),Map.of("id",id));
     }
 
     public Flux<Recipe> getLikedRecipes(String pbUid){
         String q = """
             MATCH (u:USER)-[:LIKES]->(recipe:RECIPE)
             WHERE u.pbId = $pbId
-            RETURN"""+ RecipeMaper.RETURN;
-        return recipeMaper.resultAsRecipes(q,Map.of("pbId",pbUid));
+            RETURN""";
+        return recipeMaper.resultAsFlux(RecipeMaper.getMapperQuery(q),Map.of("pbId",pbUid));
     }
 
     public Mono<Recipe> updateRecipe(RecipeUpdateRequest recipeUpdateRequest){
@@ -105,8 +106,8 @@ public class RecipeService {
                 MATCH (tag:TAG) WHERE ID(tag) IN $tags
                 MERGE (recipe)-[:HAS_TAG]->(tag)
             }
-            RETURN""" + RecipeMaper.RETURN;
-        return recipeMaper.resultAsRecipe(q,Map.of(
+            RETURN""";
+        return recipeMaper.resultAsMono(RecipeMaper.getMapperQuery(q),Map.of(
                 "id", recipeUpdateRequest.getId(),
                 "title", recipeUpdateRequest.getTitle(),
                 "link", recipeUpdateRequest.getLink(),
@@ -132,8 +133,8 @@ public class RecipeService {
                     MATCH (tag:TAG) WHERE ID(tag) IN $tags
                     MERGE (recipe)-[:HAS_TAG]->(tag)
                 }
-                RETURN"""+RecipeMaper.RETURN;
-        return recipeMaper.resultAsRecipe(q,Map.of(
+                RETURN""";
+        return recipeMaper.resultAsMono(RecipeMaper.getMapperQuery(q),Map.of(
                 "title", recipeInsertRequest.getTitle(),
                 "link", recipeInsertRequest.getLink(),
                 "image", recipeInsertRequest.getImage(),

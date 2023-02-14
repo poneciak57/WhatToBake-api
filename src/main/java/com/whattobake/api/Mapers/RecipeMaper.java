@@ -1,20 +1,11 @@
 package com.whattobake.api.Mapers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whattobake.api.Model.Recipe;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
-public class RecipeMaper {
-
-    private final ReactiveNeo4jClient client;
+public class RecipeMaper extends Neo4jResultMapper<Recipe>{
     static public final String RETURN = """
         recipe{
             id: ID(recipe),
@@ -33,21 +24,17 @@ public class RecipeMaper {
             }]
         }
     """;
+    static public final String ROW_NAME = "recipe";
 
-    public Mono<Recipe> resultAsRecipe(String query, Map<String,Object> params){
-        ObjectMapper mapper = new ObjectMapper();
-        return client.query(query)
-                .bindAll(params)
-                .fetchAs(Recipe.class)
-                .mappedBy((ts,r)-> mapper.convertValue(r.get("recipe").asMap(), Recipe.class)
-                ).first();
+    public RecipeMaper(ReactiveNeo4jClient client) {
+        super(client);
     }
-    public Flux<Recipe> resultAsRecipes(String query, Map<String,Object> params){
-        ObjectMapper mapper = new ObjectMapper();
-        return client.query(query)
-                .bindAll(params)
-                .fetchAs(Recipe.class)
-                .mappedBy((ts,r)-> mapper.convertValue(r.get("recipe").asMap(), Recipe.class)
-                ).all();
+
+    public static MapperQuery getMapperQuery(String query){
+        return MapperQuery.builder()
+                .query(query + RecipeMaper.RETURN)
+                .rowName(RecipeMaper.ROW_NAME)
+                .build();
     }
+
 }
