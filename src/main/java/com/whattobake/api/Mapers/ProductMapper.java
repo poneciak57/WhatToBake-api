@@ -2,8 +2,10 @@ package com.whattobake.api.Mapers;
 
 import com.whattobake.api.Model.Product;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
+import org.springframework.stereotype.Component;
 
-public class ProductMaper extends Neo4jResultMapper<Product> {
+@Component
+public class ProductMapper extends Neo4jResultMapper<Product> {
 
     static public final String RETURN = """
         product{
@@ -16,7 +18,7 @@ public class ProductMaper extends Neo4jResultMapper<Product> {
         }
     """;
     static public final String ROW_NAME = "product";
-    public ProductMaper(ReactiveNeo4jClient client) {
+    public ProductMapper(ReactiveNeo4jClient client) {
         super(client, RETURN,ROW_NAME);
     }
 }

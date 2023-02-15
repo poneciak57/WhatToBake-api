@@ -2,7 +2,7 @@ package com.whattobake.api.Repository.Implementations;
 
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Enum.ProductOrder;
-import com.whattobake.api.Mapers.ProductMaper;
+import com.whattobake.api.Mapers.ProductMapper;
 import com.whattobake.api.Model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,19 +15,19 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class ProductRepositoryImpl {
-    private final ProductMaper productMaper;
+    private final ProductMapper productMapper;
 
     @SuppressWarnings("unused")
     Flux<Product> findAll(ProductFilters productFilters){
         String q = """
             MATCH (p:PRODUCT)-[hc:HAS_CATEGORY]->(c:CATEGORY)
-            RETURN"""+ ProductMaper.RETURN;
+            RETURN"""+ ProductMapper.RETURN;
         if(!productFilters.getProductOrder().isEmpty()){
             q +=" ORDER BY " + productFilters.getProductOrder().stream()
                     .map(ProductOrder::getValue)
                     .collect(Collectors.joining(","));
         }
-        return productMaper.resultAsFlux(productMaper.getMapperQueryNoAddon(q), Map.of());
+        return productMapper.resultAsFlux(productMapper.getMapperQueryNoAddon(q), Map.of());
     }
 
     @SuppressWarnings("unused")
@@ -41,7 +41,7 @@ public class ProductRepositoryImpl {
                 MERGE (product)-[:HAS_CATEGORY]->(c)
             }
             RETURN""";
-        return productMaper.resultAsMono(productMaper.getMapperQuery(q),product);
+        return productMapper.resultAsMono(productMapper.getMapperQuery(q),product);
     }
     @SuppressWarnings("unused")
     Mono<Product> update(Map<String,Object> product){
@@ -56,6 +56,6 @@ public class ProductRepositoryImpl {
                 MERGE (product)-[:HAS_CATEGORY]->(c)
             }
             RETURN""";
-        return productMaper.resultAsMono(productMaper.getMapperQuery(q),product);
+        return productMapper.resultAsMono(productMapper.getMapperQuery(q),product);
     }
 }
