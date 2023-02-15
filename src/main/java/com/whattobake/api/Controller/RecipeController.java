@@ -3,7 +3,6 @@ package com.whattobake.api.Controller;
 import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Dto.InsertDto.RecipeInsertRequest;
-import com.whattobake.api.Exception.RecipeNotFoundException;
 import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Service.RecipeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,18 +24,17 @@ public class RecipeController {
 
     @GetMapping("/info")
     public Mono<RecipeInfo> info(@RequestBody Mono<Optional<RecipeFilters>> recipeFilters){
-        return recipeFilters.map(r -> r.orElse(new RecipeFilters()).fillDefaults()).flatMap(recipeService::info);
+        return recipeFilters.flatMap(recipeService::info);
     }
 
     @GetMapping("/")
     public Flux<Recipe> getAllRecipes(@RequestBody Mono<Optional<RecipeFilters>> recipeFilters){
-        return recipeFilters.map(r -> r.orElse(new RecipeFilters()).fillDefaults()).flatMapMany(recipeService::getAllRecipes);
+        return recipeFilters.flatMapMany(recipeService::getAllRecipes);
     }
 
     @GetMapping("/{id}")
-    public Mono<Recipe> getOneById(@PathVariable("id") Mono<Long> id){
-        return id.flatMap(recipeService::getOneById)
-                .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+id+" does not exist")));
+    public Mono<Recipe> getOneById(@PathVariable("id") Long id){
+        return recipeService.getOneById(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -47,16 +45,13 @@ public class RecipeController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteRecipe(@PathVariable("id") Mono<Long> id){
-        return id.flatMap(recipeService::deleteRecipe);
+    public Mono<Void> deleteRecipe(@PathVariable("id") Long id){
+        return recipeService.deleteRecipe(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Mono<Recipe> updateRecipe(@PathVariable("id") Mono<Long> id, @RequestBody Mono<RecipeInsertRequest> recipeInsertRequest){
-        return Mono.zip(id,recipeInsertRequest)
-                .map(data -> data.getT2().toUpdateRequest(data.getT1()))
-                .flatMap(recipeService::updateRecipe)
-                .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+id+" does not exist")));
+    public Mono<Recipe> updateRecipe(@PathVariable("id") Long id, @RequestBody Mono<RecipeInsertRequest> recipeInsertRequest){
+        return recipeInsertRequest.map(r -> r.toUpdateRequest(id)).flatMap(recipeService::updateRecipe);
     }
 }

@@ -24,15 +24,14 @@ public class TagController {
     }
 
     @GetMapping("/{id}")
-    public Mono<Tag> oneById(@PathVariable("id") Mono<Long> id){
-        return id.flatMap(tagService::oneById).switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
+    public Mono<Tag> oneById(@PathVariable("id") Long id){
+        return tagService.oneById(id).switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Mono<Tag> updateTag(@PathVariable("id") Mono<Long> id, @RequestBody Mono<TagInsertRequest> tagInsertRequest){
-        return Mono.zip(id,tagInsertRequest)
-                .map(data -> data.getT2().toUpdateRequest(data.getT1()))
+    public Mono<Tag> updateTag(@PathVariable("id") Long id, @RequestBody Mono<TagInsertRequest> tagInsertRequest){
+        return tagInsertRequest.map(t -> t.toUpdateRequest(id))
                 .flatMap(tagService::updateTag)
                 .switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
     }
@@ -43,7 +42,7 @@ public class TagController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteTag(@PathVariable("id") Mono<Long> id){
-        return id.flatMap(tagService::deleteTag);
+    public Mono<Void> deleteTag(@PathVariable("id") Long id){
+        return tagService.deleteTag(id);
     }
 }

@@ -25,8 +25,8 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public Mono<Category> getOneById(@PathVariable("id") Mono<Long> id){
-        return id.flatMap(categoryService::getOneById)
+    public Mono<Category> getOneById(@PathVariable("id") Long id){
+        return categoryService.getOneById(id)
                 .switchIfEmpty(Mono.error(new CategoryNotFoundException("Category with given id: "+id+" does not exist")));
     }
 
@@ -39,17 +39,16 @@ public class CategoryController {
 //    Update category
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Mono<Category> updateCategory(@PathVariable("id") Mono<Long> id,@RequestBody Mono<CategoryInsertRequest> categoryInsertRequest) {
-        return Mono.zip(id,categoryInsertRequest)
-                .map(data -> data.getT2().toUpdateRequest(data.getT1()))
+    public Mono<Category> updateCategory(@PathVariable("id") Long id,@RequestBody Mono<CategoryInsertRequest> categoryInsertRequest) {
+        return categoryInsertRequest.map(c -> c.toUpdateRequest(id))
                 .flatMap(categoryService::updateCategory)
                 .switchIfEmpty(Mono.error(new CategoryNotFoundException("Category with given id: "+id+" does not exist")));
     }
 //    Delete category
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteCategory(@PathVariable("id") Mono<Long> id){
-        return id.flatMap(categoryService::deleteCategory);
+    public Mono<Void> deleteCategory(@PathVariable("id") Long id){
+        return categoryService.deleteCategory(id);
     }
 
 }

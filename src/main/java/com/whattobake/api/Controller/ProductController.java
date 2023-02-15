@@ -27,8 +27,8 @@ public class ProductController {
         return productFilters.map(p -> p.orElse(new ProductFilters()).fillDefaults()).flatMapMany(productService::getAllProducts);
     }
     @GetMapping("/{id}")
-    public Mono<Product> getOneById(@PathVariable("id") Mono<Long> id){
-        return id.flatMap(productService::getOneById)
+    public Mono<Product> getOneById(@PathVariable("id") Long id){
+        return productService.getOneById(id)
                 .switchIfEmpty(Mono.error(new ProductNotFoundException("Recipe with given id: "+id+" does not exist")));
     }
 
@@ -40,17 +40,16 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Mono<Product> updateProduct(@PathVariable("id") Mono<Long> id,@RequestBody Mono<ProductInsertRequest> productInsertRequest){
-        return Mono.zip(id,productInsertRequest)
-                .map(data -> data.getT2().toUpdateRequest(data.getT1()))
+    public Mono<Product> updateProduct(@PathVariable("id") Long id,@RequestBody Mono<ProductInsertRequest> productInsertRequest){
+        return productInsertRequest.map(p->p.toUpdateRequest(id))
                 .flatMap(productService::updateProduct)
                 .switchIfEmpty(Mono.error(new ProductNotFoundException("Recipe with given id: "+id+" does not exist")));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteProduct(@PathVariable("id") Mono<Long> id){
-        return id.flatMap(productService::deleteProduct);
+    public Mono<Void> deleteProduct(@PathVariable("id") Long id){
+        return productService.deleteProduct(id);
     }
 
 }
