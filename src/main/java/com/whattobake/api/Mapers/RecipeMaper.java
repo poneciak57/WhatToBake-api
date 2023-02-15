@@ -27,14 +27,8 @@ public class RecipeMaper extends Neo4jResultMapper<Recipe>{
     static public final String ROW_NAME = "recipe";
 
     public RecipeMaper(ReactiveNeo4jClient client) {
-        super(client);
+        super(client, RETURN,ROW_NAME);
     }
 
-    public static MapperQuery getMapperQuery(String query){
-        return MapperQuery.builder()
-                .query(query + RecipeMaper.RETURN)
-                .rowName(RecipeMaper.ROW_NAME)
-                .build();
-    }
 
 }
