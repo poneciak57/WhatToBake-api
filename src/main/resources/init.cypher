@@ -4,13 +4,15 @@ CREATE
 // Categories
 (c1:CATEGORY{name:"category1"}),
 (c2:CATEGORY{name:"category2"}),
+(c3:CATEGORY{name:"category3"}),
 
-// Products
+// Products//
 (p1:PRODUCT{name:"product1"})-[:HAS_CATEGORY]->(c1),
 (p2:PRODUCT{name:"product2"})-[:HAS_CATEGORY]->(c1),
 (p3:PRODUCT{name:"product3"})-[:HAS_CATEGORY]->(c2),
-(p4:PRODUCT{name:"product5"})-[:HAS_CATEGORY]->(c2),
-(p5:PRODUCT{name:"product6"})-[:HAS_CATEGORY]->(c1),
+(p4:PRODUCT{name:"product4"})-[:HAS_CATEGORY]->(c2),
+(p5:PRODUCT{name:"product5"})-[:HAS_CATEGORY]->(c1),
+(p6:PRODUCT{name:"product6"}),
 
 // Recipes
 (r1:RECIPE{title:"recipe1",link:"-",image:"-"}),
@@ -20,11 +22,13 @@ CREATE
 (r5:RECIPE{title:"recipe5",link:"-",image:"-"}),
 (r6:RECIPE{title:"recipe6",link:"-",image:"-"}),
 (r7:RECIPE{title:"recipe7",link:"-",image:"-"}),
+(r8:RECIPE{title:"recipe8",link:"-",image:"-"}),
 
 // Tags
 (t1:TAG{name:"tag1"}),
-(t2:TAG{name:"tag1"}),
-(t3:TAG{name:"tag1"}),
+(t2:TAG{name:"tag2"}),
+(t3:TAG{name:"tag3"}),
+(t4:TAG{name:"tag4"}),
 
 // Recipe tags relations
 (r1)-[:HAS_TAG]->(t1),
