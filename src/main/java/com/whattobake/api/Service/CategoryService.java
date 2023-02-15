@@ -2,6 +2,7 @@ package com.whattobake.api.Service;
 
 import com.whattobake.api.Dto.InsertDto.CategoryInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.CategoryUpdateRequest;
+import com.whattobake.api.Exception.CategoryNotFoundException;
 import com.whattobake.api.Model.Category;
 import com.whattobake.api.Repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,8 @@ public class CategoryService {
     }
 
     public Mono<Category> getOneById(Long id) {
-        return categoryRepository.findById(id);
+        return categoryRepository.findById(id)
+                .switchIfEmpty(Mono.error(new CategoryNotFoundException("Category with given id: "+id+" does not exist")));
     }
 
     public Mono<Category> newCategory(CategoryInsertRequest categoryInsertRequest) {
@@ -28,7 +30,8 @@ public class CategoryService {
     }
 
     public Mono<Category> updateCategory(CategoryUpdateRequest categoryUpdateRequest) {
-        return categoryRepository.save(categoryUpdateRequest.toModel());
+        return categoryRepository.save(categoryUpdateRequest.toModel())
+                .switchIfEmpty(Mono.error(new CategoryNotFoundException("Category with given id: "+categoryUpdateRequest.getId()+" does not exist")));
     }
 
     public Mono<Void> deleteCategory(Long id) {

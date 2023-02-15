@@ -4,137 +4,52 @@ import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Dto.InsertDto.RecipeInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.RecipeUpdateRequest;
-import com.whattobake.api.Enum.RecipeProductOrder;
-import com.whattobake.api.Mapers.MapperQuery;
-import com.whattobake.api.Mapers.RecipeMaper;
+import com.whattobake.api.Exception.RecipeNotFoundException;
 import com.whattobake.api.Model.Recipe;
+import com.whattobake.api.Repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
-import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class RecipeService {
-    @Value("${w2b.recipes.pageCount}")
-    private Long RECIPES_PER_PAGE;
-    private final ReactiveNeo4jTemplate template;
-    private final ReactiveNeo4jClient client;
-    private final RecipeMaper recipeMaper;
-//    private final RecipeRepository recipeRepository;
-    public Mono<RecipeInfo> info(RecipeFilters recipeFilters){
-        String q = """
-            CALL { MATCH (recipe:RECIPE) RETURN COUNT(recipe) AS countAll }
-            CALL {
-                MATCH (recipe:RECIPE)
-                """ + recipeFilters.getTagOption().getValue() + """
-                RETURN COUNT(recipe) AS countWithFilters
-            }
-            RETURN countAll as count, countWithFilters
-            """;
-        return client.query(q)
-                .bindAll(Map.of(
-                        "tags",recipeFilters.getTags(),
-                        "tags_size", recipeFilters.getTags().size()
-                ))
-                .fetchAs(RecipeInfo.class)
-                .mappedBy((ts,r)->
-                        RecipeInfo.builder()
-                                .count(r.get("count").asLong())
-                                .countWithFilters(r.get("countWithFilters").asLong())
-                                .build()
-                ).first();
+    private final RecipeRepository recipeRepository;
+    public Mono<RecipeInfo> info(Optional<RecipeFilters> recipeFilters){
+        return recipeRepository.info(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
     }
 
-    public Flux<Recipe> getAllRecipes(RecipeFilters recipeFilters){
-        String q = """
-                MATCH (recipe:RECIPE)
-                """+ recipeFilters.getTagOption().getValue() +"""
-                CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) RETURN COUNT(p) AS prodCount }
-                CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
-                CALL { WITH recipe MATCH (recipe)<-[l:LIKES]-(:USER) RETURN COUNT(l) as likes }
-                RETURN""" + RecipeMaper.RETURN + """
-                    ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts,((HasProducts*100)/prodCount) AS Progress
-                """;
-        if(!recipeFilters.getProductOrder().isEmpty()){
-            q +=" ORDER BY " + recipeFilters.getProductOrder().stream()
-                    .map(RecipeProductOrder::getValue)
-                    .collect(Collectors.joining(",")) + ", recipe.id ASC ";
-        }
-        q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
-        return recipeMaper.resultAsFlux(MapperQuery.builder().query(q).rowName(RecipeMaper.ROW_NAME).build(),Map.of(
-                "products",recipeFilters.getProducts(),
-                "tags",recipeFilters.getTags(),
-                "tags_size",recipeFilters.getTags().size()
-        ));
+    public Flux<Recipe> getAllRecipes(Optional<RecipeFilters> recipeFilters){
+        return recipeRepository.findAll(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
     }
     public Mono<Recipe> getOneById(Long id) {
-        String q = """
-            MATCH (recipe:RECIPE) WHERE ID(recipe) = $id
-            RETURN""";
-        return recipeMaper.resultAsMono(RecipeMaper.getMapperQuery(q),Map.of("id",id));
+        return recipeRepository.findOne(id)
+                .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+id+" does not exist")));
     }
 
     public Flux<Recipe> getLikedRecipes(String pbUid){
-        String q = """
-            MATCH (u:USER)-[:LIKES]->(recipe:RECIPE)
-            WHERE u.pbId = $pbId
-            RETURN""";
-        return recipeMaper.resultAsFlux(RecipeMaper.getMapperQuery(q),Map.of("pbId",pbUid));
+        return recipeRepository.getLikedRecipes(pbUid);
     }
 
     public Mono<Recipe> updateRecipe(RecipeUpdateRequest recipeUpdateRequest){
-        String q = """
-            MATCH (recipe:RECIPE) WHERE ID(recipe) = $id
-            SET recipe.title = $title
-            SET recipe.link = $link
-            SET recipe.image = $image
-            WITH recipe
-            CALL{ WITH recipe MATCH (recipe)-[r:NEEDS]->(:PRODUCT) DELETE r }
-            CALL{ WITH recipe
-                MATCH (product:PRODUCT) WHERE ID(product) IN $products
-                MERGE (recipe)-[:NEEDS]->(product)
-            }
-            CALL{ WITH recipe MATCH (recipe)-[r:HAS_TAG]->(:TAG) DELETE r }
-            CALL{ WITH recipe
-                MATCH (tag:TAG) WHERE ID(tag) IN $tags
-                MERGE (recipe)-[:HAS_TAG]->(tag)
-            }
-            RETURN""";
-        return recipeMaper.resultAsMono(RecipeMaper.getMapperQuery(q),Map.of(
+        return recipeRepository.update(Map.of(
                 "id", recipeUpdateRequest.getId(),
                 "title", recipeUpdateRequest.getTitle(),
                 "link", recipeUpdateRequest.getLink(),
                 "image", recipeUpdateRequest.getImage(),
                 "products", recipeUpdateRequest.getProducts(),
-                "tags", recipeUpdateRequest.getTags()
-        ));
+                "tags", recipeUpdateRequest.getTags()))
+                .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+recipeUpdateRequest.getId()+" does not exist")));
     }
     public Mono<Void> deleteRecipe(Long id){
-        return template.deleteById(id,Recipe.class);
+        return recipeRepository.deleteById(id);
     }
     public Mono<Recipe> newRecipe(RecipeInsertRequest recipeInsertRequest){
-        String q = """
-                CREATE (recipe:RECIPE{title:$title,link:$link,image:$image})
-                WITH recipe
-                CALL{
-                    WITH recipe
-                    MATCH (product:PRODUCT) WHERE ID(product) IN $products
-                    MERGE (recipe)-[:NEEDS]->(product)
-                }
-                CALL{
-                    WITH recipe
-                    MATCH (tag:TAG) WHERE ID(tag) IN $tags
-                    MERGE (recipe)-[:HAS_TAG]->(tag)
-                }
-                RETURN""";
-        return recipeMaper.resultAsMono(RecipeMaper.getMapperQuery(q),Map.of(
+        return recipeRepository.create(Map.of(
                 "title", recipeInsertRequest.getTitle(),
                 "link", recipeInsertRequest.getLink(),
                 "image", recipeInsertRequest.getImage(),

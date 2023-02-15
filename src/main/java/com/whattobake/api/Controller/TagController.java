@@ -1,7 +1,6 @@
 package com.whattobake.api.Controller;
 
 import com.whattobake.api.Dto.InsertDto.TagInsertRequest;
-import com.whattobake.api.Exception.TagNotFoundException;
 import com.whattobake.api.Model.Tag;
 import com.whattobake.api.Service.TagService;
 import lombok.RequiredArgsConstructor;
@@ -25,15 +24,14 @@ public class TagController {
 
     @GetMapping("/{id}")
     public Mono<Tag> oneById(@PathVariable("id") Long id){
-        return tagService.oneById(id).switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
+        return tagService.oneById(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public Mono<Tag> updateTag(@PathVariable("id") Long id, @RequestBody Mono<TagInsertRequest> tagInsertRequest){
         return tagInsertRequest.map(t -> t.toUpdateRequest(id))
-                .flatMap(tagService::updateTag)
-                .switchIfEmpty(Mono.error(new TagNotFoundException("Tag with given id: "+ id + " does not exist")));
+                .flatMap(tagService::updateTag);
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
