@@ -5,7 +5,7 @@ import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RecipeMaper extends Neo4jResultMapper<Recipe>{
+public class RecipeMapper extends Neo4jResultMapper<Recipe>{
     static public final String RETURN = """
         recipe{
             id: ID(recipe),
@@ -26,7 +26,7 @@ public class RecipeMaper extends Neo4jResultMapper<Recipe>{
     """;
     static public final String ROW_NAME = "recipe";
 
-    public RecipeMaper(ReactiveNeo4jClient client) {
+    public RecipeMapper(ReactiveNeo4jClient client) {
         super(client, RETURN,ROW_NAME);
     }
 

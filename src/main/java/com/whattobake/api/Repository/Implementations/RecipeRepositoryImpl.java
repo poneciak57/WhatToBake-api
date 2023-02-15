@@ -3,8 +3,7 @@ package com.whattobake.api.Repository.Implementations;
 import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Enum.RecipeProductOrder;
-import com.whattobake.api.Mapers.MapperQuery;
-import com.whattobake.api.Mapers.RecipeMaper;
+import com.whattobake.api.Mapers.RecipeMapper;
 import com.whattobake.api.Model.Recipe;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +22,7 @@ public class RecipeRepositoryImpl {
     @Value("${w2b.recipes.pageCount}")
     private Long RECIPES_PER_PAGE;
     private final ReactiveNeo4jClient client;
-    private final RecipeMaper recipeMaper;
+    private final RecipeMapper recipeMapper;
 
     @SuppressWarnings("unused")
     public Flux<Recipe> getLikedRecipes(String pbUid){
@@ -31,7 +30,7 @@ public class RecipeRepositoryImpl {
             MATCH (u:USER)-[:LIKES]->(recipe:RECIPE)
             WHERE u.pbId = $pbId
             RETURN""";
-        return recipeMaper.resultAsFlux(recipeMaper.getMapperQuery(q),Map.of("pbId",pbUid));
+        return recipeMapper.resultAsFlux(recipeMapper.getMapperQuery(q),Map.of("pbId",pbUid));
     }
     @SuppressWarnings("unused")
     public Mono<RecipeInfo> info(RecipeFilters recipeFilters) {
@@ -45,16 +44,11 @@ public class RecipeRepositoryImpl {
             RETURN countAll as count, countWithFilters
             """;
         return client.query(q)
-                .bindAll(Map.of(
-                        "tags",recipeFilters.getTags(),
-                        "tags_size", recipeFilters.getTags().size()
-                ))
+                .bindAll(Map.of("tags",recipeFilters.getTags(), "tags_size", recipeFilters.getTags().size()))
                 .fetchAs(RecipeInfo.class)
-                .mappedBy((ts,r)->
-                        RecipeInfo.builder()
+                .mappedBy((ts,r)-> RecipeInfo.builder()
                                 .count(r.get("count").asLong())
-                                .countWithFilters(r.get("countWithFilters").asLong())
-                                .build()
+                                .countWithFilters(r.get("countWithFilters").asLong()).build()
                 ).first();
     }
 
@@ -66,7 +60,7 @@ public class RecipeRepositoryImpl {
                 CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) RETURN COUNT(p) AS prodCount }
                 CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
                 CALL { WITH recipe MATCH (recipe)<-[l:LIKES]-(:USER) RETURN COUNT(l) as likes }
-                RETURN""" + RecipeMaper.RETURN + """
+                RETURN""" + RecipeMapper.RETURN + """
                     ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts,((HasProducts*100)/prodCount) AS Progress
                 """;
         if(!recipeFilters.getProductOrder().isEmpty()){
@@ -75,7 +69,7 @@ public class RecipeRepositoryImpl {
                     .collect(Collectors.joining(",")) + ", recipe.id ASC ";
         }
         q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
-        return recipeMaper.resultAsFlux(MapperQuery.builder().query(q).rowName(RecipeMaper.ROW_NAME).build(),Map.of(
+        return recipeMapper.resultAsFlux(recipeMapper.getMapperQueryNoAddon(q),Map.of(
                 "products",recipeFilters.getProducts(),
                 "tags",recipeFilters.getTags(),
                 "tags_size",recipeFilters.getTags().size()
@@ -85,7 +79,7 @@ public class RecipeRepositoryImpl {
     @SuppressWarnings("unused")
     public Mono<Recipe> findOne(Long id) {
         String q = "MATCH (recipe:RECIPE) WHERE ID(recipe) = $id RETURN";
-        return recipeMaper.resultAsMono(recipeMaper.getMapperQuery(q),Map.of("id",id));
+        return recipeMapper.resultAsMono(recipeMapper.getMapperQuery(q),Map.of("id",id));
     }
 
     @SuppressWarnings("unused")
@@ -104,7 +98,7 @@ public class RecipeRepositoryImpl {
                     MERGE (recipe)-[:HAS_TAG]->(tag)
                 }
                 RETURN""";
-        return recipeMaper.resultAsMono(recipeMaper.getMapperQuery(q),recipe);
+        return recipeMapper.resultAsMono(recipeMapper.getMapperQuery(q),recipe);
     }
 
     @SuppressWarnings("unused")
@@ -126,6 +120,6 @@ public class RecipeRepositoryImpl {
                 MERGE (recipe)-[:HAS_TAG]->(tag)
             }
             RETURN""";
-        return recipeMaper.resultAsMono(recipeMaper.getMapperQuery(q), recipe);
+        return recipeMapper.resultAsMono(recipeMapper.getMapperQuery(q), recipe);
     }
 }

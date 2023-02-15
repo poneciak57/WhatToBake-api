@@ -3,55 +3,46 @@ package com.whattobake.api.Service;
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
-import com.whattobake.api.Enum.ProductOrder;
 import com.whattobake.api.Model.Product;
+import com.whattobake.api.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-
-//    private final ReactiveNeo4jClient client;
-    private final ReactiveNeo4jTemplate template;
-//    private final ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     public Flux<Product> getAllProducts(ProductFilters productFilters){
-        String q = """
-            MATCH (p:PRODUCT)-[hc:HAS_CATEGORY]->(c:CATEGORY)
-            RETURN *
-        """;
-        if(!productFilters.getProductOrder().isEmpty()){
-            q +=" ORDER BY " + productFilters.getProductOrder().stream()
-                    .map(ProductOrder::getValue)
-                    .collect(Collectors.joining(","));
-        }
-        return template.findAll(q, Map.of(
-
-        ),Product.class);
+        return productRepository.findAll(productFilters);
     }
 
     public Mono<Product> getOneById(Long id) {
-        return null;
+        return productRepository.findById(id);
     }
 
     public Mono<Product> newProduct(ProductInsertRequest productInsertRequest) {
-        return null;
+        return productRepository.create(Map.of(
+                "name",productInsertRequest.getName(),
+                "category",productInsertRequest.getCategory()
+        ));
     }
 
-    public Mono<Product> updateProduct(ProductUpdateRequest build) {
-        return null;
+    public Mono<Product> updateProduct(ProductUpdateRequest productUpdateRequest) {
+        return productRepository.update(Map.of(
+                "id",productUpdateRequest.getId(),
+                "name",productUpdateRequest.getName(),
+                "category",productUpdateRequest.getCategory()
+        ));
     }
 
     public Mono<Void> deleteProduct(Long id) {
-        return null;
+        return productRepository.deleteById(id);
     }
 }

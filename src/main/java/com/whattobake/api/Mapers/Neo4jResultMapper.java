@@ -50,4 +50,10 @@ public class Neo4jResultMapper<Model> {
                 .rowName(this.row_name)
                 .build();
     }
+    public MapperQuery getMapperQueryNoAddon(String query){
+        return MapperQuery.builder()
+                .query(query)
+                .rowName(this.row_name)
+                .build();
+    }
 }
