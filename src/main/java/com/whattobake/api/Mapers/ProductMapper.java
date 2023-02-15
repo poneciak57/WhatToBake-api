@@ -11,8 +11,8 @@ public class ProductMapper extends Neo4jResultMapper<Product> {
         product{
             id: ID(product),
             .*,
-            category: [(p)-[:HAS_CATEGORY]-(c:CATEGORY) | c{
-                id: ID(c)
+            category: [(product)-[:HAS_CATEGORY]-(c:CATEGORY) | c{
+                id: ID(c),
                 .*
             }][0]
         }

@@ -3,6 +3,7 @@ package com.whattobake.api.Service;
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
+import com.whattobake.api.Exception.ProductNotFoundException;
 import com.whattobake.api.Model.Product;
 import com.whattobake.api.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -19,12 +21,13 @@ import java.util.Map;
 public class ProductService {
     private final ProductRepository productRepository;
 
-    public Flux<Product> getAllProducts(ProductFilters productFilters){
-        return productRepository.findAll(productFilters);
+    public Flux<Product> getAllProducts(Optional<ProductFilters> productFilters){
+        return productRepository.findAll(productFilters.orElse(new ProductFilters()).fillDefaults());
     }
 
     public Mono<Product> getOneById(Long id) {
-        return productRepository.findById(id);
+        return productRepository.findById(id)
+                .switchIfEmpty(Mono.error(new ProductNotFoundException("Product with given id: "+id+" does not exist")));
     }
 
     public Mono<Product> newProduct(ProductInsertRequest productInsertRequest) {
@@ -39,7 +42,7 @@ public class ProductService {
                 "id",productUpdateRequest.getId(),
                 "name",productUpdateRequest.getName(),
                 "category",productUpdateRequest.getCategory()
-        ));
+        )).switchIfEmpty(Mono.error(new ProductNotFoundException("Product with given id: "+productUpdateRequest.getId()+" does not exist")));
     }
 
     public Mono<Void> deleteProduct(Long id) {

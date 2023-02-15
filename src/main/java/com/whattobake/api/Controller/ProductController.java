@@ -2,7 +2,6 @@ package com.whattobake.api.Controller;
 
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
-import com.whattobake.api.Exception.ProductNotFoundException;
 import com.whattobake.api.Model.Product;
 import com.whattobake.api.Service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,12 +23,11 @@ public class ProductController {
 
     @GetMapping("/")
     public Flux<Product> getAllProducts(@RequestBody Mono<Optional<ProductFilters>> productFilters){
-        return productFilters.map(p -> p.orElse(new ProductFilters()).fillDefaults()).flatMapMany(productService::getAllProducts);
+        return productFilters.flatMapMany(productService::getAllProducts);
     }
     @GetMapping("/{id}")
     public Mono<Product> getOneById(@PathVariable("id") Long id){
-        return productService.getOneById(id)
-                .switchIfEmpty(Mono.error(new ProductNotFoundException("Recipe with given id: "+id+" does not exist")));
+        return productService.getOneById(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -42,8 +40,7 @@ public class ProductController {
     @PutMapping("/{id}")
     public Mono<Product> updateProduct(@PathVariable("id") Long id,@RequestBody Mono<ProductInsertRequest> productInsertRequest){
         return productInsertRequest.map(p->p.toUpdateRequest(id))
-                .flatMap(productService::updateProduct)
-                .switchIfEmpty(Mono.error(new ProductNotFoundException("Recipe with given id: "+id+" does not exist")));
+                .flatMap(productService::updateProduct);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

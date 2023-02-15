@@ -18,9 +18,9 @@ public class ProductRepositoryImpl {
     private final ProductMapper productMapper;
 
     @SuppressWarnings("unused")
-    Flux<Product> findAll(ProductFilters productFilters){
+    public Flux<Product> findAll(ProductFilters productFilters){
         String q = """
-            MATCH (p:PRODUCT)-[hc:HAS_CATEGORY]->(c:CATEGORY)
+            MATCH (product:PRODUCT)
             RETURN"""+ ProductMapper.RETURN;
         if(!productFilters.getProductOrder().isEmpty()){
             q +=" ORDER BY " + productFilters.getProductOrder().stream()
@@ -31,7 +31,7 @@ public class ProductRepositoryImpl {
     }
 
     @SuppressWarnings("unused")
-    Mono<Product> create(Map<String,Object> product){
+    public Mono<Product> create(Map<String,Object> product){
         String q = """
             CREATE (product:PRODUCT{name:$name})
             WITH product
@@ -44,7 +44,7 @@ public class ProductRepositoryImpl {
         return productMapper.resultAsMono(productMapper.getMapperQuery(q),product);
     }
     @SuppressWarnings("unused")
-    Mono<Product> update(Map<String,Object> product){
+    public Mono<Product> update(Map<String,Object> product){
         String q = """
             MATCH (product:PRODUCT) WHERE ID(product) = $id
             SET product.name = $name

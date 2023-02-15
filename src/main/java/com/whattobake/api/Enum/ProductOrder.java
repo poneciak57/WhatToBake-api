@@ -1,8 +1,8 @@
 package com.whattobake.api.Enum;
 
 public enum ProductOrder {
-    ALPHABETIC_ASC(" p.name ASC "),
-    ALPHABETIC_DESC(" p.name DESC ");
+    @SuppressWarnings("unused") ALPHABETIC_ASC(" product.name ASC "),
+    @SuppressWarnings("unused") ALPHABETIC_DESC(" product.name DESC ");
 
     private final String value;
     ProductOrder(final String value) {
