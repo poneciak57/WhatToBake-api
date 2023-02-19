@@ -89,6 +89,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>what2bake-api</finalName>
 	</build>
 
 </project>

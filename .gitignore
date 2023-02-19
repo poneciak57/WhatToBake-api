@@ -1,5 +1,12 @@
+### My ###
+.data/pocketbase/logs.db
+.data/neo4j
+docker-compose.prod.yml
+.data-prod
+.run
 HELP.md
 target/
+
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -18,7 +25,6 @@ target/
 *.iws
 *.iml
 *.ipr
-.run
 
 ### NetBeans ###
 /nbproject/private/

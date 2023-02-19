@@ -25,6 +25,7 @@ for example by the products they have, the recipes they like, categories, tags a
 # :books: Contents
 
 - [Tech stack][tstack]
+- [How to run](#how-to-run)
 - [Docs][docs]
 - [Auth][auth]
 
@@ -41,6 +42,34 @@ for example by the products they have, the recipes they like, categories, tags a
     <img width="55" src="./docs/assets/icons/pb.png">
     <img height="55" src="./docs/assets/icons/swagger.png">
 </div>
+
+---
+### How to run localy
+
+To run the app simply run this command:
+```
+docker-compose up --build -d
+```
+after that u should get 3 containers running and accesible as follows
+- pocketbase: `http://localhost:9090`
+- neo4j: `bolt://localhost:7687/neo4j`
+- what2bake-api: `http:localhost:8080`
+>if any of these ports is used just override the properties in `docker-compose.yml` file or change them directly in `src/main/resaurces/application.properties`
+
+Pocketbase admin dashboard can be accessed with these credentials:
+```
+email = admin@gmail.com
+password = adminpassword
+url = http://localhost:9090/_/
+```
+
+Neo4j database can be accessed with these credentials:
+```
+username = neo4j
+password = password
+url = bolt://localhost:7687
+```
+u can also initialize the database with example data to tests, u can find the query [here](./src/main/resources/init.cypher) 
 
 ---
 ### :clipboard: Docs
