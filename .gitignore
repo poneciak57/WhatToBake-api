@@ -1,5 +1,5 @@
 ### My ###
-.data/pocketbase/logs.db
+.data/pocketbase/logs.*
 .data/neo4j
 docker-compose.prod.yml
 .data-prod

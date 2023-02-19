@@ -39,7 +39,6 @@ public class ApiApplication {
 					content -> {
 						if(Objects.equals(content.event(), "PB_CONNECT")){
 							log.info("Connecting to PB realtime");
-							log.info("conn id:"+content.id());
 							userService.subscribeToUsers(content.id())
 									.doOnSuccess(a -> log.info("Successfully established connection with PB realtime"))
 									.subscribe();

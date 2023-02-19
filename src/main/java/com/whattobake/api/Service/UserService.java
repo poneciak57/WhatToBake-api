@@ -14,14 +14,18 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
     @Value("${pocketbase.url}")
     private String pbURL;
 
-    @Value("${pocketbase.admin.token}")
-    private String pbAdminAuthToken;
+    @Value("${pocketbase.admin.username}")
+    private String pbAdminUsername;
+    @Value("${pocketbase.admin.password}")
+    private String pbAdminPassword;
 
     private final UserRepository userRepository;
 
@@ -36,13 +40,14 @@ public class UserService {
 
     public Mono<String> subscribeToUsers(String clientId){
         String body = "{\"clientId\":\""+clientId+"\",\"subscriptions\": [\"users\"]\n}";
-        return WebClient.create(pbURL).post()
+        return this.getAdminAuthToken().flatMap(token ->
+                WebClient.create(pbURL).post()
                 .uri("/api/realtime")
-                .header(HttpHeaders.AUTHORIZATION,"Bearer "+pbAdminAuthToken)
+                .header(HttpHeaders.AUTHORIZATION,"Bearer "+token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(body))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<>() {});
+                .bodyToMono(new ParameterizedTypeReference<>() {}));
     }
 
     public Mono<User> create(User user){
@@ -55,5 +60,18 @@ public class UserService {
 
     public Mono<Void> delete(User user){
         return userRepository.delete(user);
+    }
+
+    private Mono<String> getAdminAuthToken(){
+        String body = "{\"identity\":\""+pbAdminUsername+"\",\"password\":\""+pbAdminPassword+"\"}";
+        return WebClient.create(pbURL).post()
+                .uri("/api/admins/auth-with-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(body))
+                .retrieve()
+                .bodyToMono(Map.class)
+                .map(m -> m.get("token").toString());
+
+
     }
 }
