@@ -1,4 +1,5 @@
 ### My ###
+src/main/resources/querries/
 .data/pocketbase/logs.*
 .data/neo4j
 docker-compose.prod.yml

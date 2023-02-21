@@ -32,7 +32,7 @@ for example by the products they have, the recipes they like, categories, tags a
 
 
 ---
-### :hammer_and_wrench: Technologies & tools
+## :hammer_and_wrench: Technologies & tools
 
 <div>
     <img width="55" src="./docs/assets/icons/spring-original.svg">
@@ -44,26 +44,34 @@ for example by the products they have, the recipes they like, categories, tags a
 </div>
 
 ---
-### How to run localy
+## How to run localy
 
 To run the app simply run this command:
 ```
 docker-compose up --build -d
 ```
+> it is possible that pocketbase will not start, 
+> thats because it does not have an official docker image and 
+> in dockerfile i download it and unzip, 
+> so if its not working just change the arch in `pocketbase.dockerfile` 
+> or indirectly in `docker-compose.yml`. 
+> I found that issue while hosting on linux vps 
+
 after that u should get 3 containers running and accesible as follows
 - pocketbase: `http://localhost:9090`
 - neo4j: `bolt://localhost:7687/neo4j`
 - what2bake-api: `http:localhost:8080`
 >if any of these ports is used just override the properties in `docker-compose.yml` file or change them directly in `src/main/resaurces/application.properties`
 
-Pocketbase admin dashboard can be accessed with these credentials:
+### Pocketbase admin dashboard can be accessed with these credentials:
 ```
 email = admin@gmail.com
 password = adminpassword
 url = http://localhost:9090/_/
 ```
+u can find schema of database in `./data/pb_schema.json`
 
-Neo4j database can be accessed with these credentials:
+### Neo4j database can be accessed with these credentials:
 ```
 username = neo4j
 password = password
@@ -72,12 +80,12 @@ url = bolt://localhost:7687
 u can also initialize the database with example data to tests, u can find the query [here](./src/main/resources/init.cypher) 
 
 ---
-### :clipboard: Docs
+## :clipboard: Docs
 The api is up and running, docs for it can be found [here](http://132.226.204.66:81/swagger-doc/swagger-ui.html).
 Its simple swagger documentation and will be updated in a future.
 
 ---
-### :lock: Auth
+## :lock: Auth
 We use Pocketbase as user provider because it has built in authentication as well as oauth2 support. Moreover, it has library for flutter. 
 
 
