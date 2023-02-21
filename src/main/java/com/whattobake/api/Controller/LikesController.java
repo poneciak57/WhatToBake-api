@@ -1,8 +1,9 @@
 package com.whattobake.api.Controller;
 
 import com.whattobake.api.Model.Recipe;
+import com.whattobake.api.Model.User;
+import com.whattobake.api.Security.SecurityHelper;
 import com.whattobake.api.Service.LikesService;
-import com.whattobake.api.Service.RecipeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,23 +19,20 @@ import java.security.Principal;
 public class LikesController {
 
     private final LikesService likesService;
-    private final RecipeService recipeService;
 
     @GetMapping("/all")
     public Flux<Recipe> getLiked(Mono<Principal> principal){
-//        return principal.map(p -> recipeService.getLikedRecipes(p.))
-//        return recipeService.getLikedRecipes();
-        return null;
+        return principal.map(SecurityHelper::UserFromPrincipal)
+                .map(User::getPbId)
+                .flatMapMany(likesService::getLikedRecipes);
     }
     @PostMapping("/{recipeId}")
-    public Mono<Recipe> like(@PathVariable Long recipeId){
-//        TODO like recipe
-        return null;
+    public Mono<Recipe> like(@PathVariable Long recipeId,Mono<Principal> principal){
+        return principal.map(SecurityHelper::UserFromPrincipal).flatMap(u -> likesService.likeRecipe(recipeId,u.getPbId()));
     }
 
     @DeleteMapping("/{recipeId}")
-    public Mono<Recipe> unlike(@PathVariable Long recipeId){
-//        TODO unlike recipe
-        return null;
+    public Mono<Void> unlike(@PathVariable Long recipeId,Mono<Principal> principal){
+        return principal.map(SecurityHelper::UserFromPrincipal).flatMap(u -> likesService.unlikeRecipe(recipeId,u.getPbId()));
     }
 }

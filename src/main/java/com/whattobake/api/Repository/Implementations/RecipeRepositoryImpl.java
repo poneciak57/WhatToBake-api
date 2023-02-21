@@ -25,14 +25,6 @@ public class RecipeRepositoryImpl {
     private final RecipeMapper recipeMapper;
 
     @SuppressWarnings("unused")
-    public Flux<Recipe> getLikedRecipes(String pbUid){
-        String q = """
-            MATCH (u:USER)-[:LIKES]->(recipe:RECIPE)
-            WHERE u.pbId = $pbId
-            RETURN""";
-        return recipeMapper.resultAsFlux(recipeMapper.getMapperQuery(q),Map.of("pbId",pbUid));
-    }
-    @SuppressWarnings("unused")
     public Mono<RecipeInfo> info(RecipeFilters recipeFilters) {
         String q = """
             CALL { MATCH (recipe:RECIPE) RETURN COUNT(recipe) AS countAll }
@@ -61,7 +53,11 @@ public class RecipeRepositoryImpl {
                 CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
                 CALL { WITH recipe MATCH (recipe)<-[l:LIKES]-(:USER) RETURN COUNT(l) as likes }
                 RETURN""" + RecipeMapper.RETURN + """
-                    ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts,((HasProducts*100)/prodCount) AS Progress
+                    ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts,
+                    CASE prodCount
+                        WHEN 0 THEN 0
+                        ELSE (HasProducts*100)/prodCount
+                    END AS Progress
                 """;
         if(!recipeFilters.getProductOrder().isEmpty()){
             q +=" ORDER BY " + recipeFilters.getProductOrder().stream()

@@ -31,10 +31,6 @@ public class RecipeService {
                 .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+id+" does not exist")));
     }
 
-    public Flux<Recipe> getLikedRecipes(String pbUid){
-        return recipeRepository.getLikedRecipes(pbUid);
-    }
-
     public Mono<Recipe> updateRecipe(RecipeUpdateRequest recipeUpdateRequest){
         return recipeRepository.update(Map.of(
                 "id", recipeUpdateRequest.getId(),

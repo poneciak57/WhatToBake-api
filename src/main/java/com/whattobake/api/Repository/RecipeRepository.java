@@ -12,7 +12,6 @@ import java.util.Map;
 
 @Repository
 public interface RecipeRepository extends ReactiveNeo4jRepository<Recipe, Long>{
-    Flux<Recipe> getLikedRecipes(String pbUid);
     Flux<Recipe> findAll(RecipeFilters recipeFilters);
     Mono<Recipe> findOne(Long id);
     Mono<RecipeInfo> info(RecipeFilters recipeFilters);

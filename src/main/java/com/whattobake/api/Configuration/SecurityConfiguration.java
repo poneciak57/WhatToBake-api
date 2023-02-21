@@ -42,6 +42,7 @@ public class SecurityConfiguration {
                 .authorizeExchange()
                 .pathMatchers("/test/user").authenticated()
                 .pathMatchers("/test/admin").authenticated()
+                .pathMatchers("/likes/**").authenticated()
                 .anyExchange().permitAll()
                 .and().build();
     }
