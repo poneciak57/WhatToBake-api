@@ -81,7 +81,7 @@ u can also initialize the database with example data to tests, u can find the qu
 
 ---
 ## :clipboard: Docs
-The api is up and running, docs for it can be found [here](http://132.226.204.66:81/swagger-doc/swagger-ui.html).
+The api is up and running, docs for it can be found [here](http://130.162.33.102:8080/swagger-doc/swagger-ui.html).
 Its simple swagger documentation and will be updated in a future.
 
 ---
