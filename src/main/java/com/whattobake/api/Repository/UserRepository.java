@@ -5,5 +5,6 @@ import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Deprecated
 public interface UserRepository extends ReactiveNeo4jRepository<User,String> {
 }

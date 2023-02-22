@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 @Service
+@Deprecated
 @RequiredArgsConstructor
 public class UserService {
     @Value("${pocketbase.url}")

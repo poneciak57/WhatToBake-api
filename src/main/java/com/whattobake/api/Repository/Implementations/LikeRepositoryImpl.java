@@ -19,8 +19,7 @@ public class LikeRepositoryImpl implements LikeRepository {
 
     public Flux<Recipe> getRecipes(String pbUid){
         String q = """
-            MATCH (user:USER)-[l:LIKES]->(recipe:RECIPE)
-            WHERE user.pbId = $pbId
+            MATCH (user:USER{pbId:$pbId})-[l:LIKES]->(recipe:RECIPE)
             RETURN""" + RecipeMapper.RETURN + """
             ORDER BY l.date DESC
             """;
@@ -29,9 +28,10 @@ public class LikeRepositoryImpl implements LikeRepository {
 
     public Mono<Recipe> like(Long id, String pbUid){
         String q = """
-            MATCH (user:USER{pbId: $pbId})
+            MERGE (user:USER{pbId:$pbId})
+            WITH user
             MATCH (recipe:RECIPE) WHERE ID(recipe) = $rid
-            CREATE (user)-[:LIKES{date:datetime()}]->(recipe)
+            MERGE (user)-[:LIKES{date:datetime()}]->(recipe)
             RETURN""";
         return recipeMapper.resultAsMono(recipeMapper.getMapperQuery(q),Map.of("pbId",pbUid,"rid",id));
     }

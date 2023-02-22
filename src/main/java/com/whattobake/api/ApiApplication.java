@@ -30,35 +30,39 @@ public class ApiApplication {
 			UserService userService
 	){
 		return args -> {
-			// PocketBase User events handling //
-			ObjectMapper mapper = new ObjectMapper();
-			var eventStream = userService.connectToRealtime();
+			// DEPRECATED //
+			// now users are just their ids for relationships, and they are created dynamically //
 
-			eventStream
-					.subscribe(
-					content -> {
-						if(Objects.equals(content.event(), "PB_CONNECT")){
-							log.info("Connecting to PB realtime");
-							userService.subscribeToUsers(content.id())
-									.doOnSuccess(a -> log.info("Successfully established connection with PB realtime"))
-									.subscribe();
-						}else{
-							try {
-								var action = mapper.readValue(content.data(), PbAction.class);
-								User u = User.fromPBAction(action.getRecord());
-								switch (action.getAction()){
-									case create -> userService.create(u).subscribe();
-									case update -> userService.update(u).subscribe();
-									case delete -> userService.delete(u).subscribe();
-								}
-								log.info(User.fromPBAction(action.getRecord()).toString());
-							} catch (JsonProcessingException e) {
-								log.error("Error while handling an event from PocketBase");
-							}
-						}
-					},
-					error -> log.error("Error receiving SSE: ", error),
-					() -> log.error("Stopped listening for pocketbase user events!!!"));
+
+			// PocketBase User events handling //
+//			ObjectMapper mapper = new ObjectMapper();
+//			var eventStream = userService.connectToRealtime();
+//
+//			eventStream
+//					.subscribe(
+//					content -> {
+//						if(Objects.equals(content.event(), "PB_CONNECT")){
+//							log.info("Connecting to PB realtime");
+//							userService.subscribeToUsers(content.id())
+//									.doOnSuccess(a -> log.info("Successfully established connection with PB realtime"))
+//									.subscribe();
+//						}else{
+//							try {
+//								var action = mapper.readValue(content.data(), PbAction.class);
+//								User u = User.fromPBAction(action.getRecord());
+//								switch (action.getAction()){
+//									case create -> userService.create(u).subscribe();
+//									case update -> userService.update(u).subscribe();
+//									case delete -> userService.delete(u).subscribe();
+//								}
+//								log.info(User.fromPBAction(action.getRecord()).toString());
+//							} catch (JsonProcessingException e) {
+//								log.error("Error while handling an event from PocketBase");
+//							}
+//						}
+//					},
+//					error -> log.error("Error receiving SSE: ", error),
+//					() -> log.error("Stopped listening for pocketbase user events!!!"));
 		};
 	}
 }
