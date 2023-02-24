@@ -4,7 +4,7 @@ import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Dto.InsertDto.RecipeInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.RecipeUpdateRequest;
-import com.whattobake.api.Exception.RecipeNotFoundException;
+import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class RecipeService {
     }
     public Mono<Recipe> getOneById(Long id) {
         return recipeRepository.findOne(id)
-                .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+id+" does not exist")));
+                .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+id+" does not exist")));
     }
 
     public Mono<Recipe> updateRecipe(RecipeUpdateRequest recipeUpdateRequest){
@@ -39,10 +39,12 @@ public class RecipeService {
                 "image", recipeUpdateRequest.getImage(),
                 "products", recipeUpdateRequest.getProducts(),
                 "tags", recipeUpdateRequest.getTags()))
-                .switchIfEmpty(Mono.error(new RecipeNotFoundException("Recipe with given id: "+recipeUpdateRequest.getId()+" does not exist")));
+                .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+recipeUpdateRequest.getId()+" does not exist")));
     }
     public Mono<Void> deleteRecipe(Long id){
-        return recipeRepository.deleteById(id);
+        return recipeRepository.findById(id)
+                .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+id+" does not exist")))
+                .flatMap(recipeRepository::delete);
     }
     public Mono<Recipe> newRecipe(RecipeInsertRequest recipeInsertRequest){
         return recipeRepository.create(Map.of(

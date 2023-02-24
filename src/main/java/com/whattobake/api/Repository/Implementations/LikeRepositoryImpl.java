@@ -36,13 +36,14 @@ public class LikeRepositoryImpl implements LikeRepository {
         return recipeMapper.resultAsMono(recipeMapper.getMapperQuery(q),Map.of("pbId",pbUid,"rid",id));
     }
 
-    public Mono<Void> unlike(Long id, String pbUid){
+    public Mono<Boolean> unlike(Long id, String pbUid){
         String q = """
             MATCH (user:USER{pbId: $pbId})
             MATCH (recipe:RECIPE) WHERE ID(recipe) = $rid
             MATCH (user)-[l:LIKES]->(recipe)
             DELETE l;
         """;
-        return client.query(q).bindAll(Map.of("pbId",pbUid,"rid",id)).fetchAs(Void.class).first();
+        return client.query(q).bindAll(Map.of("pbId",pbUid,"rid",id)).run()
+                .map(resultSummary -> resultSummary.counters().nodesDeleted() != 0);
     }
 }
