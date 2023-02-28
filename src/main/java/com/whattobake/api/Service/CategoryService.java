@@ -30,8 +30,10 @@ public class CategoryService {
     }
 
     public Mono<Category> updateCategory(CategoryUpdateRequest categoryUpdateRequest) {
-        return categoryRepository.save(categoryUpdateRequest.toModel())
-                .switchIfEmpty(Mono.error(new NodeNotFound("Category with given id: "+categoryUpdateRequest.getId()+" does not exist")));
+        return categoryRepository
+                .findById(categoryUpdateRequest.getId())
+                .switchIfEmpty(Mono.error(new NodeNotFound("Category with given id: "+categoryUpdateRequest.getId()+" does not exist")))
+                .flatMap(e -> categoryRepository.save(categoryUpdateRequest.toModel()));
     }
 
     public Mono<Void> deleteCategory(Long id) {
