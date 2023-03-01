@@ -4,6 +4,7 @@ import com.whattobake.api.Repository.TagRepository;
 import com.whattobake.api.Util.TagCreator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,35 +32,59 @@ class TagServiceTest {
     public void setUp(){
         Mockito.when(tagRepository.findAll()).thenReturn(Flux.just(TagCreator.validTag()));
         Mockito.when(tagRepository.save(TagCreator.validTag())).thenReturn(Mono.just(TagCreator.validTag()));
-        Mockito.when(tagRepository.save(TagCreator.invalidTag())).thenReturn(Mono.empty());
+//        Mockito.when(tagRepository.save(TagCreator.invalidTag())).thenReturn(Mono.empty());
         Mockito.when(tagRepository.findById(TagCreator.VALID_ID)).thenReturn(Mono.just(TagCreator.validTag()));
         Mockito.when(tagRepository.findById(TagCreator.INVALID_ID)).thenReturn(Mono.empty());
         Mockito.when(tagRepository.delete(TagCreator.validTag())).thenReturn(Mono.empty());
     }
 
+    @Test
+    @DisplayName("all, should return flux of tags")
+    public void testAllTags_whenIsOk_thenReturnFluxOfTags(){
 
+    }
 
-//    allTags Correct
+    @Test
+    @DisplayName("one_by_id, should return mono of tag")
+    public void testOneById_whenIdIsCorrect_thenReturnMonoOfTag(){
 
-//    oneById Correct
+    }
 
-//    oneById Error wrong id
+    @Test
+    @DisplayName("one_by_id, should throw an error")
+    public void testOneById_whenIdIsIncorrect_thenThrowException(){
 
-//    updateTag Correct
+    }
 
-//    updateTag Error wrong id
+    @Test
+    @DisplayName("update, should return mono of tag ")
+    public void testUpdateTag_whenIdIsCorrect_thenReturnMonoOfTag(){
 
-//    deleteTag Correct
+    }
 
-//    deleteTag Error wrong id
+    @Test
+    @DisplayName("update, should throw an error")
+    public void testUpdateTag_whenIdIsIncorrect_thenThrowException(){
 
-//    newTag correct
+    }
 
+    @Test
+    @DisplayName("delete, should return mono empty")
+    public void testDeleteTag_whenIdIsCorrect_thenReturnMonoEmpty(){
 
+    }
 
+    @Test
+    @DisplayName("delete, should throw an error")
+    public void testDeleteTag_whenIdIsIncorrect_thenThrowException(){
 
+    }
 
+    @Test
+    @DisplayName("create, should return mono of tag")
+    public void testNewTag_whenOK_thenReturnMonoOfTag(){
 
+    }
 
     @Test
     public void blockHoundWorks() {

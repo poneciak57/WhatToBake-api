@@ -7,6 +7,7 @@ import com.whattobake.api.Model.Tag;
 public class TagCreator {
 
     public static final Long VALID_ID = 1L;
+
     public static final Long INVALID_ID = 10L;
 
     public static final String NAME = "test_tag";
