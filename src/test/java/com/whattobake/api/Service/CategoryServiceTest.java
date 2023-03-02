@@ -31,11 +31,11 @@ class CategoryServiceTest {
 
     @BeforeEach
     public void setUp(){
-        Mockito.when(categoryRepository.findAll()).thenReturn(Flux.just(CategoryCreator.validCategory()));
-        Mockito.when(categoryRepository.save(CategoryCreator.validCategory())).thenReturn(Mono.just(CategoryCreator.validCategory()));
-        Mockito.when(categoryRepository.findById(CategoryCreator.VALID_ID)).thenReturn(Mono.just(CategoryCreator.validCategory()));
+        Mockito.when(categoryRepository.findAll()).thenReturn(Flux.just(CategoryCreator.valid()));
+        Mockito.when(categoryRepository.save(CategoryCreator.valid())).thenReturn(Mono.just(CategoryCreator.valid()));
+        Mockito.when(categoryRepository.findById(CategoryCreator.VALID_ID)).thenReturn(Mono.just(CategoryCreator.valid()));
         Mockito.when(categoryRepository.findById(CategoryCreator.INVALID_ID)).thenReturn(Mono.empty());
-        Mockito.when(categoryRepository.delete(CategoryCreator.validCategory())).thenReturn(Mono.empty());
+        Mockito.when(categoryRepository.delete(CategoryCreator.valid())).thenReturn(Mono.empty());
     }
 
     @Test

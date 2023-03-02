@@ -33,13 +33,13 @@ class TagServiceTest {
 
     @BeforeEach
     public void setUp(){
-        Mockito.when(tagRepository.findAll()).thenReturn(Flux.just(TagCreator.validTag()));
-        Mockito.when(tagRepository.save(TagCreator.validTag())).thenReturn(Mono.just(TagCreator.validTag()));
-        Mockito.when(tagRepository.save(TagCreator.validTagInsertRequest().toModel())).thenReturn(Mono.just(TagCreator.validTag()));
+        Mockito.when(tagRepository.findAll()).thenReturn(Flux.just(TagCreator.valid()));
+        Mockito.when(tagRepository.save(TagCreator.valid())).thenReturn(Mono.just(TagCreator.valid()));
+        Mockito.when(tagRepository.save(TagCreator.validInsert().toModel())).thenReturn(Mono.just(TagCreator.valid()));
 //        Mockito.when(tagRepository.save(TagCreator.invalidTag())).thenReturn(Mono.empty());
-        Mockito.when(tagRepository.findById(TagCreator.VALID_ID)).thenReturn(Mono.just(TagCreator.validTag()));
+        Mockito.when(tagRepository.findById(TagCreator.VALID_ID)).thenReturn(Mono.just(TagCreator.valid()));
         Mockito.when(tagRepository.findById(TagCreator.INVALID_ID)).thenReturn(Mono.empty());
-        Mockito.when(tagRepository.delete(TagCreator.validTag())).thenReturn(Mono.empty());
+        Mockito.when(tagRepository.delete(TagCreator.valid())).thenReturn(Mono.empty());
     }
 
     @Test
@@ -47,7 +47,7 @@ class TagServiceTest {
     public void testAllTags_whenIsOk_thenReturnFluxOfTags(){
         StepVerifier.create(tagService.allTags())
                 .expectSubscription()
-                .expectNext(TagCreator.validTag())
+                .expectNext(TagCreator.valid())
                 .verifyComplete();
     }
 
@@ -56,7 +56,7 @@ class TagServiceTest {
     public void testOneById_whenIdIsCorrect_thenReturnMonoOfTag(){
         StepVerifier.create(tagService.oneById(TagCreator.VALID_ID))
                 .expectSubscription()
-                .expectNext(TagCreator.validTag())
+                .expectNext(TagCreator.valid())
                 .verifyComplete();
     }
 
@@ -71,16 +71,16 @@ class TagServiceTest {
     @Test
     @DisplayName("update, should return mono of tag ")
     public void testUpdateTag_whenIdIsCorrect_thenReturnMonoOfTag(){
-        StepVerifier.create(tagService.updateTag(TagCreator.validTagUpdateRequest()))
+        StepVerifier.create(tagService.updateTag(TagCreator.validUpdate()))
                 .expectSubscription()
-                .expectNext(TagCreator.validTag())
+                .expectNext(TagCreator.valid())
                 .verifyComplete();
     }
 
     @Test
     @DisplayName("update, should throw an error")
     public void testUpdateTag_whenIdIsIncorrect_thenThrowException(){
-        StepVerifier.create(tagService.updateTag(TagCreator.invalidTagUpdateRequest()))
+        StepVerifier.create(tagService.updateTag(TagCreator.invalidUpdate()))
                 .expectSubscription()
                 .verifyError(NodeNotFound.class);
         Mockito.verify(tagRepository,Mockito.never()).save(ArgumentMatchers.any());
@@ -107,9 +107,9 @@ class TagServiceTest {
     @Test
     @DisplayName("create, should return mono of tag")
     public void testNewTag_whenOK_thenReturnMonoOfTag(){
-        StepVerifier.create(tagService.newTag(TagCreator.validTagInsertRequest()))
+        StepVerifier.create(tagService.newTag(TagCreator.validInsert()))
                 .expectSubscription()
-                .expectNext(TagCreator.validTag())
+                .expectNext(TagCreator.valid())
                 .verifyComplete();
     }
 

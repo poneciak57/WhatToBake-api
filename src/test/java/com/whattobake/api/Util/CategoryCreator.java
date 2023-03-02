@@ -14,7 +14,7 @@ public class CategoryCreator {
 
     public static final String ICON = "test_icon";
 
-    public static Category validCategory(){
+    public static Category valid(){
         return Category.builder()
                 .id(VALID_ID)
                 .icon(ICON)
@@ -22,7 +22,15 @@ public class CategoryCreator {
                 .build();
     }
 
-    public static CategoryUpdateRequest validCategoryUpdateRequest(){
+    public static Category invalid(){
+        return Category.builder()
+                .id(INVALID_ID)
+                .icon(ICON)
+                .name(NAME)
+                .build();
+    }
+
+    public static CategoryUpdateRequest validUpdate(){
         return CategoryUpdateRequest.builder()
                 .id(VALID_ID)
                 .name(NAME)
@@ -30,7 +38,7 @@ public class CategoryCreator {
                 .build();
     }
 
-    public static CategoryUpdateRequest invalidCategoryUpdateRequest(){
+    public static CategoryUpdateRequest invalidUpdate(){
         return CategoryUpdateRequest.builder()
                 .id(INVALID_ID)
                 .name(NAME)
@@ -38,7 +46,7 @@ public class CategoryCreator {
                 .build();
     }
 
-    public static CategoryInsertRequest validCategoryInsertRequest(){
+    public static CategoryInsertRequest validInsert(){
         return CategoryInsertRequest.builder()
                 .name(NAME)
                 .icon(ICON)

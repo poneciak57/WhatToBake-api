@@ -12,33 +12,33 @@ public class TagCreator {
 
     public static final String NAME = "test_tag";
 
-    public static Tag validTag(){
+    public static Tag valid(){
         return Tag.builder()
                 .id(VALID_ID)
                 .name(NAME)
                 .build();
     }
-    public static Tag invalidTag(){
+    public static Tag invalid(){
         return Tag.builder()
                 .id(VALID_ID)
                 .name(NAME)
                 .build();
     }
-    public static TagUpdateRequest validTagUpdateRequest(){
+    public static TagUpdateRequest validUpdate(){
         return TagUpdateRequest.builder()
                 .id(VALID_ID)
                 .name(NAME)
                 .build();
     }
 
-    public static TagUpdateRequest invalidTagUpdateRequest(){
+    public static TagUpdateRequest invalidUpdate(){
         return TagUpdateRequest.builder()
                 .id(INVALID_ID)
                 .name(NAME)
                 .build();
     }
 
-    public static TagInsertRequest validTagInsertRequest(){
+    public static TagInsertRequest validInsert(){
         return TagInsertRequest.builder()
                 .name(NAME)
                 .build();
