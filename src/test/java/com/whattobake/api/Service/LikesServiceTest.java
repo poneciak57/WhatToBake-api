@@ -5,6 +5,7 @@ import com.whattobake.api.Util.RecipeCreator;
 import com.whattobake.api.Util.UserCreator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,7 +41,35 @@ class LikesServiceTest {
         Mockito.when(likeRepository.getRecipes(UserCreator.VALID_ID)).thenReturn(Flux.just(RecipeCreator.valid()));
     }
 
-//    Implement all tests
+    @Test
+    @DisplayName("like, when recipe id is correct, should return mono of recipe")
+    public void testLikeRecipe_whenRecipeIdIsCorrect_thenReturnsMonoOfRecipe(){
+
+    }
+
+    @Test
+    @DisplayName("like, when recipe id is incorrect, should throw NodeNotFoundException")
+    public void testLikeRecipe_whenRecipeIdIsIncorrect_thenThrowException(){
+
+    }
+
+    @Test
+    @DisplayName("unlike, when recipe-user relation exists, should return mono empty")
+    public void testUnlikeRecipe_whenRelationExists_thenReturnMonoEmpty(){
+
+    }
+
+    @Test
+    @DisplayName("unlike, when recipe-user relation doesn't exists, should throw NodeNotFoundException")
+    public void testUnlikeRecipe_whenRelationDoesNotExists_thenThrowException(){
+
+    }
+
+    @Test
+    @DisplayName("getLiked, should return flux of recipes")
+    public void testGetLikedRecipes_whenOk_thenReturnFluxOfRecipes(){
+
+    }
 
     @Test
     public void blockHoundWorks() {
