@@ -1,5 +1,6 @@
 package com.whattobake.api.Service;
 
+import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Repository.LikeRepository;
 import com.whattobake.api.Util.RecipeCreator;
 import com.whattobake.api.Util.UserCreator;
@@ -16,6 +17,7 @@ import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.test.StepVerifier;
 
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -44,31 +46,46 @@ class LikesServiceTest {
     @Test
     @DisplayName("like, when recipe id is correct, should return mono of recipe")
     public void testLikeRecipe_whenRecipeIdIsCorrect_thenReturnsMonoOfRecipe(){
-
+        StepVerifier.create(likesService.likeRecipe(RecipeCreator.VALID_ID,UserCreator.VALID_ID))
+                .expectSubscription()
+                .expectNext(RecipeCreator.valid())
+                .verifyComplete();
     }
 
     @Test
     @DisplayName("like, when recipe id is incorrect, should throw NodeNotFoundException")
     public void testLikeRecipe_whenRecipeIdIsIncorrect_thenThrowException(){
-
+        StepVerifier.create(likesService.likeRecipe(RecipeCreator.INVALID_ID,UserCreator.VALID_ID))
+                .expectSubscription()
+                .verifyError(NodeNotFound.class);
     }
 
     @Test
     @DisplayName("unlike, when recipe-user relation exists, should return mono empty")
     public void testUnlikeRecipe_whenRelationExists_thenReturnMonoEmpty(){
-
+        StepVerifier.create(likesService.unlikeRecipe(RecipeCreator.VALID_ID,UserCreator.VALID_ID))
+                .expectSubscription()
+                .verifyComplete();
     }
 
     @Test
     @DisplayName("unlike, when recipe-user relation doesn't exists, should throw NodeNotFoundException")
     public void testUnlikeRecipe_whenRelationDoesNotExists_thenThrowException(){
-
+        StepVerifier.create(likesService.unlikeRecipe(RecipeCreator.INVALID_ID,UserCreator.VALID_ID))
+                .expectSubscription()
+                .verifyError(NodeNotFound.class);
+        StepVerifier.create(likesService.unlikeRecipe(RecipeCreator.VALID_ID,UserCreator.INVALID_ID))
+                .expectSubscription()
+                .verifyError(NodeNotFound.class);
     }
 
     @Test
     @DisplayName("getLiked, should return flux of recipes")
     public void testGetLikedRecipes_whenOk_thenReturnFluxOfRecipes(){
-
+        StepVerifier.create(likesService.getLikedRecipes(UserCreator.VALID_ID))
+                .expectSubscription()
+                .expectNext(RecipeCreator.valid())
+                .verifyComplete();
     }
 
     @Test
