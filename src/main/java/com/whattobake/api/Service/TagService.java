@@ -24,8 +24,10 @@ public class TagService {
     }
 
     public Mono<Tag> updateTag(TagUpdateRequest tagUpdateRequest){
-        return tagRepository.save(tagUpdateRequest.toModel())
-                .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ tagUpdateRequest.getId() + " does not exist")));
+        return tagRepository
+                .findById(tagUpdateRequest.getId())
+                .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ tagUpdateRequest.getId() + " does not exist")))
+                .flatMap(e -> tagRepository.save(tagUpdateRequest.toModel()));
     }
     public Mono<Void> deleteTag(Long id){
         return tagRepository.findById(id)
