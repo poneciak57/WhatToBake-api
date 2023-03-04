@@ -40,6 +40,7 @@ for example by the products they have, the recipes they like, categories, tags a
     <img height="55" src="./docs/assets/icons/spring_security.png">
     <img width="55" src="./docs/assets/icons/neo4j.svg">
     <img width="55" src="./docs/assets/icons/pb.png">
+    <img height="55" src="./docs/assets/icons/nginx.png">
     <img height="55" src="./docs/assets/icons/swagger.png">
 </div>
 
@@ -57,17 +58,18 @@ docker-compose up --build -d
 > or indirectly in `docker-compose.yml`. 
 > I found that issue while hosting on linux vps 
 
-after that u should get 3 containers running and accesible as follows
-- pocketbase: `http://localhost:9090`
+after that u should get 4 containers running and accesible as follows
+- pocketbase: `http://localhost:83`
 - neo4j: `bolt://localhost:7687/neo4j`
-- what2bake-api: `http:localhost:8080`
+- what2bake-api: `http:localhost:81`
+- nginx (reverse-proxy)
 >if any of these ports is used just override the properties in `docker-compose.yml` file or change them directly in `src/main/resaurces/application.properties`
 
 ### Pocketbase admin dashboard can be accessed with these credentials:
 ```
 email = admin@gmail.com
 password = adminpassword
-url = http://localhost:9090/_/
+url = http://localhost:83
 ```
 u can find schema of database in `./data/pb_schema.json`
 
@@ -81,7 +83,7 @@ u can also initialize the database with example data to tests, u can find the qu
 
 ---
 ## :clipboard: Docs
-The api is up and running, docs for it can be found [here](http://130.162.33.102:8080/swagger-doc/swagger-ui.html).
+The api is up and running, docs for it can be found [here](http://api.what2bake.com).
 Its simple swagger documentation and will be updated in a future.
 
 ---
