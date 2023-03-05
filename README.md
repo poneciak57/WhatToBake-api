@@ -4,6 +4,10 @@ Do you ever find yourself with a pantry full of ingredients, but no idea what to
 
 With the "What2Bake" app, you'll never have to worry about wasting ingredients again! Our advanced filters allow users to search for recipes based on the ingredients they already have on hand, as well as recipe categories and tags. Plus, you can keep track of your favorite recipes and discover new ones recommended by our community. Available on both web browsers and mobile devices, "What2Bake" is the perfect tool for anyone who loves to bake!
 
+If you want to see the source code of the mobile client, check out our repository [MineSwek/What2Bake-MobileApp](https://github.com/MineSwek/What2Bake-MobileApp)
+
+If you want to see the source code of the web client, check out our repository [KacperK461/what2bake-web](https://github.com/KacperK461/what2bake-web)
+
 [//]: # (### Code )
 
 [//]: # (- [Api]&#40;https://github.com/poneciak57/WhatToBake-api&#41;)
