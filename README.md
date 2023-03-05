@@ -1,8 +1,8 @@
 <img src="./docs/assets/what2bake-baner2.png">
 
-You have some products but you dont know **what to bake**?
-With this brand new app users will be able to search for recipes and products with advanced filters 
-for example by the products they have, the recipes they like, categories, tags and so much more. App will be accessible in the web browser and natively on mobiles.
+Do you ever find yourself with a pantry full of ingredients, but no idea what to bake? Look no further than What2Bake! Our app allows users to search for recipes and ingredients using advanced filters such as the ingredients they have on hand, recipe categories, and tags.
+
+With the "What2Bake" app, you'll never have to worry about wasting ingredients again! Our advanced filters allow users to search for recipes based on the ingredients they already have on hand, as well as recipe categories and tags. Plus, you can keep track of your favorite recipes and discover new ones recommended by our community. Available on both web browsers and mobile devices, "What2Bake" is the perfect tool for anyone who loves to bake!
 
 [//]: # (### Code )
 
