@@ -1,7 +1,6 @@
 package com.whattobake.api;
 
 import com.whattobake.api.Repository.InitRepository;
-import com.whattobake.api.Service.UserService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +26,9 @@ public class ApiApplication {
 
 	@Bean
 	public CommandLineRunner commandLineRunner (
-			UserService userService,
 			InitRepository initRepository
 	){
 		return args -> {
-//			userService.handleEvents();
 			if(dbInit){
 				initRepository.clearTestDatabase()
 						.then(initRepository.initTestDatabase())
