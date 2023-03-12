@@ -5,7 +5,6 @@ import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
 import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Model.Product;
-import com.whattobake.api.Repository.CategoryRepository;
 import com.whattobake.api.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -22,7 +20,7 @@ import java.util.Optional;
 public class ProductService {
     private final ProductRepository productRepository;
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
     public Flux<Product> getAllProducts(Optional<ProductFilters> productFilters){
         return productRepository.findAll(productFilters.orElse(new ProductFilters()).fillDefaults());
@@ -34,21 +32,24 @@ public class ProductService {
     }
 
     public Mono<Product> newProduct(ProductInsertRequest productInsertRequest) {
-        return categoryRepository.findById(productInsertRequest.getCategory())
+        return categoryService.getOneById(productInsertRequest.getCategory())
                 .map(c -> Product.builder()
                         .name(productInsertRequest.getName())
                         .category(c)
                         .build())
-                .defaultIfEmpty(Product.builder().name(productInsertRequest.getName()).build())
                 .flatMap(productRepository::save);
     }
 
     public Mono<Product> updateProduct(ProductUpdateRequest productUpdateRequest) {
-        return productRepository.update(Map.of(
-                "id",productUpdateRequest.getId(),
-                "name",productUpdateRequest.getName(),
-                "category",productUpdateRequest.getCategory()
-        )).switchIfEmpty(Mono.error(new NodeNotFound("Product with given id: "+productUpdateRequest.getId()+" does not exist")));
+        return Mono.zip(
+                    this.getOneById(productUpdateRequest.getId()),
+                    categoryService.getOneById(productUpdateRequest.getCategory())
+                ).map(d -> Product.builder()
+                        .id(d.getT1().getId())
+                        .name(productUpdateRequest.getName())
+                        .category(d.getT2())
+                        .build())
+                .flatMap(productRepository::save);
     }
 
     public Mono<Void> deleteProduct(Long id) {

@@ -2,9 +2,9 @@ package com.whattobake.api.Service;
 
 
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
+import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
 import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Model.Product;
-import com.whattobake.api.Repository.CategoryRepository;
 import com.whattobake.api.Repository.ProductRepository;
 import com.whattobake.api.Util.CategoryCreator;
 import com.whattobake.api.Util.ProductCreator;
@@ -18,7 +18,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
@@ -31,11 +30,10 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 @ExtendWith(SpringExtension.class)
-@Import(Product.class)
 class ProductServiceTest {
 
     @Mock
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
 
     @Mock
     private ProductRepository productRepository;
@@ -53,11 +51,11 @@ class ProductServiceTest {
         Mockito.when(productRepository.findById(TagCreator.INVALID_ID)).thenReturn(Mono.empty());
         Mockito.when(productRepository.delete(ProductCreator.valid())).thenReturn(Mono.empty());
 
-        Mockito.when(categoryRepository.findById(CategoryCreator.VALID_ID)).thenReturn(Mono.just(CategoryCreator.valid()));
-        Mockito.when(categoryRepository.findById(CategoryCreator.INVALID_ID)).thenReturn(Mono.empty());
+        Mockito.when(categoryService.getOneById(CategoryCreator.VALID_ID)).thenReturn(Mono.just(CategoryCreator.valid()));
+        Mockito.when(categoryService.getOneById(CategoryCreator.INVALID_ID)).thenReturn(Mono.error(new NodeNotFound("test exception")));
         Mockito.when(productRepository.save(Product.builder().name(ProductCreator.NAME).category(CategoryCreator.valid()).build())).thenReturn(Mono.just(ProductCreator.valid()));
         Mockito.when(productRepository.save(Product.builder().name(ProductCreator.NAME).build())).thenReturn(Mono.just(Product.builder().id(ProductCreator.VALID_ID).name(ProductCreator.NAME).build()));
-
+        Mockito.when(productRepository.save(ProductCreator.valid())).thenReturn(Mono.just(ProductCreator.valid()));
     }
 
     @Test
@@ -105,11 +103,24 @@ class ProductServiceTest {
     }
 
     @Test
+    @DisplayName("update, when category id is incorrect, should return mono of product with null category")
+    public void testUpdateProduct_whenCategoryIdIsIncorrect_thenReturnMonoOfProductWithCategoryNull(){
+        StepVerifier.create(productService.updateProduct(ProductUpdateRequest.builder()
+                        .id(ProductCreator.VALID_ID)
+                        .name(ProductCreator.NAME)
+                        .category(CategoryCreator.INVALID_ID)
+                        .build()))
+                .expectSubscription()
+                .verifyError(NodeNotFound.class);
+    }
+
+    @Test
     @DisplayName("update, should throw an error")
     public void testUpdateProduct_whenIdIsIncorrect_thenThrowException(){
         StepVerifier.create(productService.updateProduct(ProductCreator.invalidUpdate()))
                 .expectSubscription()
                 .verifyError(NodeNotFound.class);
+        Mockito.verify(productRepository,Mockito.never()).save(ArgumentMatchers.any());
     }
 
     @Test
@@ -144,11 +155,7 @@ class ProductServiceTest {
     public void testNewProduct_whenCategoryIdIsIncorrect_thenReturnMonoOfProductWithCategoryNull(){
         StepVerifier.create(productService.newProduct(ProductCreator.insertWithInvalidCategory()))
                 .expectSubscription()
-                .expectNext(Product.builder()
-                        .id(ProductCreator.VALID_ID)
-                        .name(ProductCreator.NAME)
-                        .build())
-                .verifyComplete();
+                .verifyError(NodeNotFound.class);
     }
 
     @Test
