@@ -8,6 +8,7 @@ import com.whattobake.api.Model.Product;
 import com.whattobake.api.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -23,7 +24,12 @@ public class ProductService {
     private final CategoryService categoryService;
 
     public Flux<Product> getAllProducts(Optional<ProductFilters> productFilters){
-        return productRepository.findAll(productFilters.orElse(new ProductFilters()).fillDefaults());
+        return productRepository.findAll(Sort.by(
+                productFilters.orElse(new ProductFilters()).fillDefaults().getProductOrder().stream()
+                        .map(productOrder -> switch (productOrder){
+                            case ALPHABETIC_DESC -> Sort.Order.desc("name");
+                            case ALPHABETIC_ASC -> Sort.Order.asc("name");
+                        }).toList()));
     }
 
     public Mono<Product> getOneById(Long id) {

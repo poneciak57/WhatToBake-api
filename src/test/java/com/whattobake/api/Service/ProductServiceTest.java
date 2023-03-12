@@ -1,7 +1,6 @@
 package com.whattobake.api.Service;
 
 
-import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
 import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Model.Product;
@@ -18,6 +17,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
@@ -43,19 +43,19 @@ class ProductServiceTest {
 
     @BeforeEach
     public void setUp(){
-        Mockito.when(productRepository.findAll(ArgumentMatchers.any(ProductFilters.class))).thenReturn(Flux.just(ProductCreator.valid()));
-//        Mockito.when(productRepository.create(ProductCreator.validInsertMap())).thenReturn(Mono.just(ProductCreator.valid()));
-        Mockito.when(productRepository.update(ProductCreator.validUpdateMap())).thenReturn(Mono.just(ProductCreator.valid()));
-        Mockito.when(productRepository.update(ProductCreator.invalidUpdateMap())).thenReturn(Mono.empty());
+        Mockito.when(productRepository.findAll(ArgumentMatchers.any(Sort.class))).thenReturn(Flux.just(ProductCreator.valid()));
+
         Mockito.when(productRepository.findById(TagCreator.VALID_ID)).thenReturn(Mono.just(ProductCreator.valid()));
         Mockito.when(productRepository.findById(TagCreator.INVALID_ID)).thenReturn(Mono.empty());
+
+        Mockito.when(productRepository.save(Product.builder().name(ProductCreator.NAME).category(CategoryCreator.valid()).build())).thenReturn(Mono.just(ProductCreator.valid()));
+        Mockito.when(productRepository.save(Product.builder().name(ProductCreator.NAME).build())).thenReturn(Mono.just(ProductCreator.validNoCategory()));
+        Mockito.when(productRepository.save(ProductCreator.valid())).thenReturn(Mono.just(ProductCreator.valid()));
+
         Mockito.when(productRepository.delete(ProductCreator.valid())).thenReturn(Mono.empty());
 
         Mockito.when(categoryService.getOneById(CategoryCreator.VALID_ID)).thenReturn(Mono.just(CategoryCreator.valid()));
         Mockito.when(categoryService.getOneById(CategoryCreator.INVALID_ID)).thenReturn(Mono.error(new NodeNotFound("test exception")));
-        Mockito.when(productRepository.save(Product.builder().name(ProductCreator.NAME).category(CategoryCreator.valid()).build())).thenReturn(Mono.just(ProductCreator.valid()));
-        Mockito.when(productRepository.save(Product.builder().name(ProductCreator.NAME).build())).thenReturn(Mono.just(Product.builder().id(ProductCreator.VALID_ID).name(ProductCreator.NAME).build()));
-        Mockito.when(productRepository.save(ProductCreator.valid())).thenReturn(Mono.just(ProductCreator.valid()));
     }
 
     @Test
