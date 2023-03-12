@@ -12,7 +12,12 @@ import java.util.Map;
 @Repository
 public interface ProductRepository extends ReactiveNeo4jRepository<Product,Long> {
 
+    @Deprecated
     Flux<Product> findAll(ProductFilters productFilters);
+
+    @Deprecated
     Mono<Product> update(Map<String,Object> product);
+
+    @Deprecated
     Mono<Product> create(Map<String,Object> product);
 }

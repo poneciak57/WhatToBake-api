@@ -1,9 +1,11 @@
 package com.whattobake.api.Service;
 
 
-import com.whattobake.api.Dto.FilterDto.ProductFilters;
+import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
 import com.whattobake.api.Exception.NodeNotFound;
+import com.whattobake.api.Model.Product;
 import com.whattobake.api.Repository.ProductRepository;
+import com.whattobake.api.Util.CategoryCreator;
 import com.whattobake.api.Util.ProductCreator;
 import com.whattobake.api.Util.TagCreator;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +17,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
@@ -30,6 +33,9 @@ import java.util.concurrent.TimeUnit;
 class ProductServiceTest {
 
     @Mock
+    private CategoryService categoryService;
+
+    @Mock
     private ProductRepository productRepository;
 
     @InjectMocks
@@ -37,13 +43,19 @@ class ProductServiceTest {
 
     @BeforeEach
     public void setUp(){
-        Mockito.when(productRepository.findAll(ArgumentMatchers.any(ProductFilters.class))).thenReturn(Flux.just(ProductCreator.valid()));
-        Mockito.when(productRepository.create(ProductCreator.validInsertMap())).thenReturn(Mono.just(ProductCreator.valid()));
-        Mockito.when(productRepository.update(ProductCreator.validUpdateMap())).thenReturn(Mono.just(ProductCreator.valid()));
-        Mockito.when(productRepository.update(ProductCreator.invalidUpdateMap())).thenReturn(Mono.empty());
+        Mockito.when(productRepository.findAll(ArgumentMatchers.any(Sort.class))).thenReturn(Flux.just(ProductCreator.valid()));
+
         Mockito.when(productRepository.findById(TagCreator.VALID_ID)).thenReturn(Mono.just(ProductCreator.valid()));
         Mockito.when(productRepository.findById(TagCreator.INVALID_ID)).thenReturn(Mono.empty());
+
+        Mockito.when(productRepository.save(Product.builder().name(ProductCreator.NAME).category(CategoryCreator.valid()).build())).thenReturn(Mono.just(ProductCreator.valid()));
+        Mockito.when(productRepository.save(Product.builder().name(ProductCreator.NAME).build())).thenReturn(Mono.just(ProductCreator.validNoCategory()));
+        Mockito.when(productRepository.save(ProductCreator.valid())).thenReturn(Mono.just(ProductCreator.valid()));
+
         Mockito.when(productRepository.delete(ProductCreator.valid())).thenReturn(Mono.empty());
+
+        Mockito.when(categoryService.getOneById(CategoryCreator.VALID_ID)).thenReturn(Mono.just(CategoryCreator.valid()));
+        Mockito.when(categoryService.getOneById(CategoryCreator.INVALID_ID)).thenReturn(Mono.error(new NodeNotFound("test exception")));
     }
 
     @Test
@@ -91,11 +103,24 @@ class ProductServiceTest {
     }
 
     @Test
+    @DisplayName("update, when category id is incorrect, should return mono of product with null category")
+    public void testUpdateProduct_whenCategoryIdIsIncorrect_thenReturnMonoOfProductWithCategoryNull(){
+        StepVerifier.create(productService.updateProduct(ProductUpdateRequest.builder()
+                        .id(ProductCreator.VALID_ID)
+                        .name(ProductCreator.NAME)
+                        .category(CategoryCreator.INVALID_ID)
+                        .build()))
+                .expectSubscription()
+                .verifyError(NodeNotFound.class);
+    }
+
+    @Test
     @DisplayName("update, should throw an error")
     public void testUpdateProduct_whenIdIsIncorrect_thenThrowException(){
         StepVerifier.create(productService.updateProduct(ProductCreator.invalidUpdate()))
                 .expectSubscription()
                 .verifyError(NodeNotFound.class);
+        Mockito.verify(productRepository,Mockito.never()).save(ArgumentMatchers.any());
     }
 
     @Test
@@ -117,12 +142,20 @@ class ProductServiceTest {
     }
 
     @Test
-    @DisplayName("create, should return mono of product")
-    public void testNewProduct_whenOK_thenReturnMonoOfProduct(){
+    @DisplayName("create, when category id is correct, should return mono of product")
+    public void testNewProduct_whenCategoryIdIsCorrect_thenReturnMonoOfProduct(){
         StepVerifier.create(productService.newProduct(ProductCreator.validInsert()))
                 .expectSubscription()
                 .expectNext(ProductCreator.valid())
                 .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("create, when category id is incorrect, should return mono of product")
+    public void testNewProduct_whenCategoryIdIsIncorrect_thenReturnMonoOfProductWithCategoryNull(){
+        StepVerifier.create(productService.newProduct(ProductCreator.insertWithInvalidCategory()))
+                .expectSubscription()
+                .verifyError(NodeNotFound.class);
     }
 
     @Test

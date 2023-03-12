@@ -3,11 +3,7 @@ package com.whattobake.api.Util;
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
-import com.whattobake.api.Enum.ProductOrder;
 import com.whattobake.api.Model.Product;
-
-import java.util.List;
-import java.util.Map;
 
 public class ProductCreator {
 
@@ -25,11 +21,10 @@ public class ProductCreator {
                 .build();
     }
 
-    public static Product invalid() {
+    public static Product validNoCategory(){
         return Product.builder()
-                .id(INVALID_ID)
+                .id(VALID_ID)
                 .name(NAME)
-                .category(CategoryCreator.valid())
                 .build();
     }
 
@@ -56,34 +51,15 @@ public class ProductCreator {
                 .build();
     }
 
-    public static Map<String, Object> validInsertMap() {
-        return Map.of(
-                "name", NAME,
-                "category",CategoryCreator.VALID_ID
-        );
-    }
-
-    public static Map<String, Object> validUpdateMap() {
-        return Map.of(
-                "id", VALID_ID,
-                "name", NAME,
-                "category", CategoryCreator.VALID_ID
-        );
-    }
-
-    public static Map<String, Object> invalidUpdateMap() {
-        return Map.of(
-                "id", INVALID_ID,
-                "name", NAME,
-                "category", CategoryCreator.VALID_ID
-        );
+    public static ProductInsertRequest insertWithInvalidCategory() {
+        return ProductInsertRequest.builder()
+                .name(NAME)
+                .category(CategoryCreator.INVALID_ID)
+                .build();
     }
 
     public static ProductFilters defaultFilters() {
         return (new ProductFilters()).fillDefaults();
     }
 
-    public static ProductFilters customFilters() {
-        return new ProductFilters(List.of(ProductOrder.ALPHABETIC_DESC));
-    }
 }
