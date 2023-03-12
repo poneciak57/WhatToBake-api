@@ -25,14 +25,6 @@ public class ProductCreator {
                 .build();
     }
 
-    public static Product invalid() {
-        return Product.builder()
-                .id(INVALID_ID)
-                .name(NAME)
-                .category(CategoryCreator.valid())
-                .build();
-    }
-
     public static ProductUpdateRequest validUpdate() {
         return ProductUpdateRequest.builder()
                 .id(VALID_ID)
@@ -53,6 +45,13 @@ public class ProductCreator {
         return ProductInsertRequest.builder()
                 .name(NAME)
                 .category(CategoryCreator.VALID_ID)
+                .build();
+    }
+
+    public static ProductInsertRequest insertWithInvalidCategory() {
+        return ProductInsertRequest.builder()
+                .name(NAME)
+                .category(CategoryCreator.INVALID_ID)
                 .build();
     }
 

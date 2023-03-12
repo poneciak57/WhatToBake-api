@@ -5,6 +5,7 @@ import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.ProductUpdateRequest;
 import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Model.Product;
+import com.whattobake.api.Repository.CategoryRepository;
 import com.whattobake.api.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,8 @@ import java.util.Optional;
 public class ProductService {
     private final ProductRepository productRepository;
 
+    private final CategoryRepository categoryRepository;
+
     public Flux<Product> getAllProducts(Optional<ProductFilters> productFilters){
         return productRepository.findAll(productFilters.orElse(new ProductFilters()).fillDefaults());
     }
@@ -31,10 +34,13 @@ public class ProductService {
     }
 
     public Mono<Product> newProduct(ProductInsertRequest productInsertRequest) {
-        return productRepository.create(Map.of(
-                "name",productInsertRequest.getName(),
-                "category",productInsertRequest.getCategory()
-        ));
+        return categoryRepository.findById(productInsertRequest.getCategory())
+                .map(c -> Product.builder()
+                        .name(productInsertRequest.getName())
+                        .category(c)
+                        .build())
+                .defaultIfEmpty(Product.builder().name(productInsertRequest.getName()).build())
+                .flatMap(productRepository::save);
     }
 
     public Mono<Product> updateProduct(ProductUpdateRequest productUpdateRequest) {

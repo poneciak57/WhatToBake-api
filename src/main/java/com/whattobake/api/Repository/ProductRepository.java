@@ -13,6 +13,9 @@ import java.util.Map;
 public interface ProductRepository extends ReactiveNeo4jRepository<Product,Long> {
 
     Flux<Product> findAll(ProductFilters productFilters);
+
     Mono<Product> update(Map<String,Object> product);
+
+    @Deprecated
     Mono<Product> create(Map<String,Object> product);
 }
