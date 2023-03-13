@@ -2,6 +2,8 @@ package com.whattobake.api.Dto.FilterDto;
 
 import com.whattobake.api.Enum.ProductOrder;
 import com.whattobake.api.Interfaces.NotNull;
+import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductFilters implements NotNull<ProductFilters> {
-    private List<ProductOrder> productOrder;
+
+    @Nullable
+    private List<@Valid ProductOrder> productOrder;
 
     @Override
     public ProductFilters fillDefaults() {

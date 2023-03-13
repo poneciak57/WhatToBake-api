@@ -1,5 +1,9 @@
 package com.whattobake.api.Model;
 
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,16 +19,18 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 @NoArgsConstructor
 @Builder
 public class Product {
+
     @Id
     @GeneratedValue
     private Long id;
+
+    @NotNull
+    @NotEmpty
+    @Size(max = 30)
     private String name;
 
+    @Nullable
     @Relationship("HAS_CATEGORY")
     private Category category;
 
-
-    public Product(String name) {
-        this.name = name;
-    }
 }

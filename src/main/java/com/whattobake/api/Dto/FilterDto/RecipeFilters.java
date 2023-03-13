@@ -2,7 +2,10 @@ package com.whattobake.api.Dto.FilterDto;
 
 import com.whattobake.api.Enum.RecipeProductOrder;
 import com.whattobake.api.Enum.TagOption;
-import com.whattobake.api.Interfaces.NotNull;
+import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,11 +15,23 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecipeFilters implements NotNull<RecipeFilters> {
+public class RecipeFilters implements com.whattobake.api.Interfaces.NotNull<RecipeFilters> {
+
+    @Min(0)
+    @Nullable
     private Long page;
-    private List<Long> products;
-    private List<Long> tags;
-    private List<RecipeProductOrder> productOrder;
+
+    @Nullable
+    private List<@Min(0) @NotNull Long> products;
+
+    @Nullable
+    private List<@Min(0) @NotNull Long> tags;
+
+    @Nullable
+    private List<@Valid RecipeProductOrder> productOrder;
+
+    @Valid
+    @Nullable
     private TagOption tagOption;
 
     @Override

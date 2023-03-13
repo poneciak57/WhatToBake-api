@@ -4,6 +4,9 @@ import com.whattobake.api.Dto.InsertDto.CategoryInsertRequest;
 import com.whattobake.api.Model.Category;
 import com.whattobake.api.Service.CategoryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,32 +22,33 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/")
-    public Flux<Category> allCategories(){
+    public Flux<Category> allCategories() {
         return categoryService.allCategories();
     }
 
     @GetMapping("/{id}")
-    public Mono<Category> getOneById(@PathVariable("id") Long id){
+    public Mono<Category> oneById(@Min (0) @NotNull @PathVariable("id") Long id) {
         return categoryService.getOneById(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
-    public Mono<Category> newProduct(@RequestBody Mono<CategoryInsertRequest> categoryInsertRequest){
+    public Mono<Category> newCategory(@Valid @RequestBody Mono<CategoryInsertRequest> categoryInsertRequest) {
         return categoryInsertRequest.flatMap(categoryService::newCategory);
     }
 
-//    Update category
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Mono<Category> updateCategory(@PathVariable("id") Long id,@RequestBody Mono<CategoryInsertRequest> categoryInsertRequest) {
+    public Mono<Category> updateCategory(
+            @Min(0) @NotNull @PathVariable("id") Long id,
+            @Valid @RequestBody Mono<CategoryInsertRequest> categoryInsertRequest) {
         return categoryInsertRequest.map(c -> c.toUpdateRequest(id))
                 .flatMap(categoryService::updateCategory);
     }
-//    Delete category
+
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteCategory(@PathVariable("id") Long id){
+    public Mono<Void> deleteCategory(@Min(0) @NotNull @PathVariable("id") Long id) {
         return categoryService.deleteCategory(id);
     }
 
