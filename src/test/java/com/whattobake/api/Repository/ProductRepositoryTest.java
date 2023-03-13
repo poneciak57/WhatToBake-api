@@ -1,12 +1,11 @@
-package com.whattobake.api.Repository.Implementations;
+package com.whattobake.api.Repository;
 
 import com.whattobake.api.BaseIntegrationTestEmbeddedDB;
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Enum.ProductOrder;
 import com.whattobake.api.Model.Category;
 import com.whattobake.api.Model.Product;
-import com.whattobake.api.Repository.CategoryRepository;
-import com.whattobake.api.Repository.ProductRepository;
+import com.whattobake.api.Repository.Implementations.ProductRepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +21,7 @@ import java.util.Objects;
 
 @Slf4j
 @Import(ProductRepositoryImpl.class)
-class ProductRepositoryImplTest extends BaseIntegrationTestEmbeddedDB {
+class ProductRepositoryTest extends BaseIntegrationTestEmbeddedDB {
 
     @Autowired
     private ProductRepository productRepository;
@@ -72,12 +71,12 @@ class ProductRepositoryImplTest extends BaseIntegrationTestEmbeddedDB {
                         Category.builder().name("example_name1").icon("example_icon1").build()
                 )).block();
         productRepository.save(
-                Product.builder().name("example_product").category(category).build()
-        ).flatMap(p -> productRepository.update(Map.of(
-                "id", p.getId(),
-                "name", "example_product_updated",
-                "category", p.getCategory().getId()
-        ))).as(StepVerifier::create)
+                        Product.builder().name("example_product").category(category).build()
+                ).flatMap(p -> productRepository.update(Map.of(
+                        "id", p.getId(),
+                        "name", "example_product_updated",
+                        "category", p.getCategory().getId()
+                ))).as(StepVerifier::create)
                 .consumeNextWith(p -> {
                     Assertions.assertEquals(p.getName(), "example_product_updated");
                     Assertions.assertEquals(p.getCategory(), category);
@@ -122,10 +121,10 @@ class ProductRepositoryImplTest extends BaseIntegrationTestEmbeddedDB {
                         Category.builder().name("example_name1").icon("example_icon1").build()
                 )).block();
         productRepository.update(Map.of(
-                "id", 10L,
-                "name", "dummy_name",
-                "category", Objects.requireNonNull(category).getId()
-        )).as(StepVerifier::create)
+                        "id", 10L,
+                        "name", "dummy_name",
+                        "category", Objects.requireNonNull(category).getId()
+                )).as(StepVerifier::create)
                 .verifyComplete();
         productRepository.count().as(StepVerifier::create)
                 .consumeNextWith(c -> Assertions.assertEquals(c,0))
@@ -163,9 +162,9 @@ class ProductRepositoryImplTest extends BaseIntegrationTestEmbeddedDB {
                         Category.builder().name("example_name1").icon("example_icon1").build()
                 )).block();
         productRepository.create(Map.of(
-                "name", "example_name",
-                "category", Objects.requireNonNull(category).getId()
-        )).flatMap(p-> productRepository.findById(p.getId()))
+                        "name", "example_name",
+                        "category", Objects.requireNonNull(category).getId()
+                )).flatMap(p-> productRepository.findById(p.getId()))
                 .as(StepVerifier::create)
                 .consumeNextWith(p -> {
                     Assertions.assertEquals(p.getName(),"example_name");
