@@ -4,7 +4,9 @@ import com.whattobake.api.Dto.UpdateDto.TagUpdateRequest;
 import com.whattobake.api.Interfaces.InsertRequestDto;
 import com.whattobake.api.Interfaces.ModelDto;
 import com.whattobake.api.Model.Tag;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +19,8 @@ import lombok.NoArgsConstructor;
 public class TagInsertRequest implements ModelDto<Tag>, InsertRequestDto<TagUpdateRequest,Long> {
 
     @NotNull
+    @NotEmpty
+    @Size(max = 30)
     private String name;
 
     @Override
