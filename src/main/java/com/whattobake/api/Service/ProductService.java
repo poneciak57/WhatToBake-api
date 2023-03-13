@@ -23,7 +23,7 @@ public class ProductService {
 
     private final CategoryService categoryService;
 
-    public Flux<Product> getAllProducts(Optional<ProductFilters> productFilters){
+    public Flux<Product> getAllProducts(Optional<ProductFilters> productFilters) {
         return productRepository.findAll(Sort.by(
                 productFilters.orElse(new ProductFilters()).fillDefaults().getProductOrder().stream()
                         .map(productOrder -> switch (productOrder){

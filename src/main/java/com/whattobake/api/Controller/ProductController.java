@@ -32,18 +32,18 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/")
-    public Flux<Product> getAllProducts(@Valid @RequestBody Mono<Optional<ProductFilters>> productFilters){
+    public Flux<Product> getAllProducts(@Valid @RequestBody Mono<Optional<ProductFilters>> productFilters) {
         return productFilters.flatMapMany(productService::getAllProducts);
     }
 
     @GetMapping("/{id}")
-    public Mono<Product> oneById(@Min(0) @NotNull @PathVariable("id") Long id){
+    public Mono<Product> oneById(@Min(0) @NotNull @PathVariable("id") Long id) {
         return productService.getOneById(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
-    public Mono<Product> newProduct(@Valid @RequestBody Mono<ProductInsertRequest> productInsertRequest){
+    public Mono<Product> newProduct(@Valid @RequestBody Mono<ProductInsertRequest> productInsertRequest) {
         return productInsertRequest.flatMap(productService::newProduct);
     }
 
@@ -51,14 +51,14 @@ public class ProductController {
     @PutMapping("/{id}")
     public Mono<Product> updateProduct(
             @Min(0) @NotNull @PathVariable("id") Long id,
-            @Valid @RequestBody Mono<ProductInsertRequest> productInsertRequest){
+            @Valid @RequestBody Mono<ProductInsertRequest> productInsertRequest) {
         return productInsertRequest.map(p->p.toUpdateRequest(id))
                 .flatMap(productService::updateProduct);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteProduct(@Min(0) @NotNull @PathVariable("id") Long id){
+    public Mono<Void> deleteProduct(@Min(0) @NotNull @PathVariable("id") Long id) {
         return productService.deleteProduct(id);
     }
 

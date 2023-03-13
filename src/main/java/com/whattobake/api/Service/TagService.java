@@ -20,25 +20,25 @@ public class TagService {
         return tagRepository.findAll();
     }
 
-    public Mono<Tag> oneById(Long id){
+    public Mono<Tag> oneById(Long id) {
         return tagRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ id + " does not exist")));
     }
 
-    public Mono<Tag> updateTag(TagUpdateRequest tagUpdateRequest){
+    public Mono<Tag> updateTag(TagUpdateRequest tagUpdateRequest) {
         return tagRepository
                 .findById(tagUpdateRequest.getId())
                 .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ tagUpdateRequest.getId() + " does not exist")))
                 .flatMap(e -> tagRepository.save(tagUpdateRequest.toModel()));
     }
 
-    public Mono<Void> deleteTag(Long id){
+    public Mono<Void> deleteTag(Long id) {
         return tagRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ id + " does not exist")))
                 .flatMap(tagRepository::delete);
     }
 
-    public Mono<Tag> newTag(TagInsertRequest tagInsertRequest){
+    public Mono<Tag> newTag(TagInsertRequest tagInsertRequest) {
         return tagRepository.save(tagInsertRequest.toModel());
     }
 }

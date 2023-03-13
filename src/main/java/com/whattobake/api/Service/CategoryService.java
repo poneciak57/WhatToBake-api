@@ -16,7 +16,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public Flux<Category> allCategories(){
+    public Flux<Category> allCategories() {
         return categoryRepository.findAll();
     }
 

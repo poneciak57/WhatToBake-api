@@ -19,11 +19,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RecipeService {
     private final RecipeRepository recipeRepository;
-    public Mono<RecipeInfo> info(Optional<RecipeFilters> recipeFilters){
+    public Mono<RecipeInfo> info(Optional<RecipeFilters> recipeFilters) {
         return recipeRepository.info(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
     }
 
-    public Flux<Recipe> getAllRecipes(Optional<RecipeFilters> recipeFilters){
+    public Flux<Recipe> getAllRecipes(Optional<RecipeFilters> recipeFilters) {
         return recipeRepository.findAll(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
     }
     public Mono<Recipe> getOneById(Long id) {
@@ -31,7 +31,7 @@ public class RecipeService {
                 .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+id+" does not exist")));
     }
 
-    public Mono<Recipe> updateRecipe(RecipeUpdateRequest recipeUpdateRequest){
+    public Mono<Recipe> updateRecipe(RecipeUpdateRequest recipeUpdateRequest) {
         return recipeRepository.update(Map.of(
                 "id", recipeUpdateRequest.getId(),
                 "title", recipeUpdateRequest.getTitle(),
@@ -41,12 +41,12 @@ public class RecipeService {
                 "tags", recipeUpdateRequest.getTags()))
                 .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+recipeUpdateRequest.getId()+" does not exist")));
     }
-    public Mono<Void> deleteRecipe(Long id){
+    public Mono<Void> deleteRecipe(Long id) {
         return recipeRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+id+" does not exist")))
                 .flatMap(recipeRepository::delete);
     }
-    public Mono<Recipe> newRecipe(RecipeInsertRequest recipeInsertRequest){
+    public Mono<Recipe> newRecipe(RecipeInsertRequest recipeInsertRequest) {
         return recipeRepository.create(Map.of(
                 "title", recipeInsertRequest.getTitle(),
                 "link", recipeInsertRequest.getLink(),

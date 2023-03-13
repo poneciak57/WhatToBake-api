@@ -26,29 +26,29 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @GetMapping("/info")
-    public Mono<RecipeInfo> info(@Valid @RequestBody Mono<Optional<RecipeFilters>> recipeFilters){
+    public Mono<RecipeInfo> info(@Valid @RequestBody Mono<Optional<RecipeFilters>> recipeFilters) {
         return recipeFilters.flatMap(recipeService::info);
     }
 
     @GetMapping("/")
-    public Flux<Recipe> getAllRecipes(@Valid @RequestBody Mono<Optional<RecipeFilters>> recipeFilters){
+    public Flux<Recipe> getAllRecipes(@Valid @RequestBody Mono<Optional<RecipeFilters>> recipeFilters) {
         return recipeFilters.flatMapMany(recipeService::getAllRecipes);
     }
 
     @GetMapping("/{id}")
-    public Mono<Recipe> getOneById(@Min(0) @NotNull @PathVariable("id") Long id){
+    public Mono<Recipe> getOneById(@Min(0) @NotNull @PathVariable("id") Long id) {
         return recipeService.getOneById(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
-    public Mono<Recipe> newRecipe(@Valid @RequestBody Mono<RecipeInsertRequest> recipeInsertRequest){
+    public Mono<Recipe> newRecipe(@Valid @RequestBody Mono<RecipeInsertRequest> recipeInsertRequest) {
         return recipeInsertRequest.flatMap(recipeService::newRecipe);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteRecipe(@Min(0) @NotNull @PathVariable("id") Long id){
+    public Mono<Void> deleteRecipe(@Min(0) @NotNull @PathVariable("id") Long id) {
         return recipeService.deleteRecipe(id);
     }
 
@@ -56,7 +56,7 @@ public class RecipeController {
     @PutMapping("/{id}")
     public Mono<Recipe> updateRecipe(
             @Min(0) @NotNull @PathVariable("id") Long id,
-            @Valid @RequestBody Mono<RecipeInsertRequest> recipeInsertRequest){
+            @Valid @RequestBody Mono<RecipeInsertRequest> recipeInsertRequest) {
         return recipeInsertRequest.map(r -> r.toUpdateRequest(id)).flatMap(recipeService::updateRecipe);
     }
 }

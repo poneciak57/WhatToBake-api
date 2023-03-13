@@ -28,12 +28,12 @@ public class TagController {
     private final TagService tagService;
 
     @GetMapping("/")
-    public Flux<Tag> allTags(){
+    public Flux<Tag> allTags() {
         return tagService.allTags();
     }
 
     @GetMapping("/{id}")
-    public Mono<Tag> oneById(@Min(0) @NotNull @PathVariable("id") Long id){
+    public Mono<Tag> oneById(@Min(0) @NotNull @PathVariable("id") Long id) {
         return tagService.oneById(id);
     }
 
@@ -41,20 +41,20 @@ public class TagController {
     @PutMapping("/{id}")
     public Mono<Tag> updateTag(
             @Min(0) @NotNull @PathVariable("id") Long id,
-            @Valid @RequestBody Mono<TagInsertRequest> tagInsertRequest){
+            @Valid @RequestBody Mono<TagInsertRequest> tagInsertRequest) {
         return tagInsertRequest.map(t -> t.toUpdateRequest(id))
                 .flatMap(tagService::updateTag);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
-    public Mono<Tag> newTag(@Valid @RequestBody Mono<TagInsertRequest> tagInsertRequest){
+    public Mono<Tag> newTag(@Valid @RequestBody Mono<TagInsertRequest> tagInsertRequest) {
         return tagInsertRequest.flatMap(tagService::newTag);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteTag(@Min(0) @NotNull @PathVariable("id") Long id){
+    public Mono<Void> deleteTag(@Min(0) @NotNull @PathVariable("id") Long id) {
         return tagService.deleteTag(id);
     }
 

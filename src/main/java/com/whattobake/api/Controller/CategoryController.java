@@ -22,18 +22,18 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/")
-    public Flux<Category> allCategories(){
+    public Flux<Category> allCategories() {
         return categoryService.allCategories();
     }
 
     @GetMapping("/{id}")
-    public Mono<Category> oneById(@Min (0) @NotNull @PathVariable("id") Long id){
+    public Mono<Category> oneById(@Min (0) @NotNull @PathVariable("id") Long id) {
         return categoryService.getOneById(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
-    public Mono<Category> newCategory(@Valid @RequestBody Mono<CategoryInsertRequest> categoryInsertRequest){
+    public Mono<Category> newCategory(@Valid @RequestBody Mono<CategoryInsertRequest> categoryInsertRequest) {
         return categoryInsertRequest.flatMap(categoryService::newCategory);
     }
 
@@ -48,7 +48,7 @@ public class CategoryController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteCategory(@Min(0) @NotNull @PathVariable("id") Long id){
+    public Mono<Void> deleteCategory(@Min(0) @NotNull @PathVariable("id") Long id) {
         return categoryService.deleteCategory(id);
     }
 
