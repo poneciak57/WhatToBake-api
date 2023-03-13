@@ -9,6 +9,8 @@ import reactor.core.publisher.Mono;
 public interface LikeRepository {
 
     Flux<Recipe> getRecipes(String pbUid);
-    Mono<Recipe> like(Long recipeId,String pbUid);
-    Mono<Boolean> unlike(Long recipeId,String pbUid);
+
+    Mono<Recipe> like(Long recipeId, String pbUid);
+
+    Mono<Boolean> unlike(Long recipeId, String pbUid);
 }
