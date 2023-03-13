@@ -30,9 +30,9 @@ public class LikeRepositoryImpl implements LikeRepository {
 
     public Mono<Recipe> like(Long id, String pbUid) {
         String q = """
-            MERGE (user:USER{pbId:$pbId})
-            WITH user
             MATCH (recipe:RECIPE) WHERE ID(recipe) = $rid
+            MERGE (user:USER{pbId:$pbId})
+            WITH user, recipe
             MERGE (user)-[:LIKES{date:datetime()}]->(recipe)
             RETURN""";
         return recipeMapper.resultAsMono(recipeMapper.getMapperQuery(q),Map.of("pbId",pbUid,"rid",id));
