@@ -1,7 +1,11 @@
-### My ###
-src/main/resources/querries/
+### Uselless stuff ###
 .data/pocketbase/logs.*
 .data/neo4j
+.data/pocketbase/data.db-shm
+.data/pocketbase/data.db-wal
+
+### Production things ###
+src/main/resources/querries/
 docker-compose.prod.yml
 .data-prod
 .run

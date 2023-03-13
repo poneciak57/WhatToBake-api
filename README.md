@@ -29,7 +29,7 @@ If you want to see the source code of the web client, check out our repository [
 # :books: Contents
 
 - [Tech stack][tstack]
-- [How to run](#how-to-run)
+- [How to run](#how-to-run-localy)
 - [Docs][docs]
 - [Auth][auth]
 
@@ -62,18 +62,18 @@ docker-compose up --build -d
 > or indirectly in `docker-compose.yml`. 
 > I found that issue while hosting on linux vps 
 
-after that u should get 4 containers running and accesible as follows
-- pocketbase: `http://localhost:83`
+after that u should get 4 containers running and accessible as follows
+- pocketbase: `http://localhost:9090`
 - neo4j: `bolt://localhost:7687/neo4j`
-- what2bake-api: `http:localhost:81`
-- nginx (reverse-proxy)
+- what2bake-api: `http:localhost:8080`
+- nginx (we use it only in production)
 >if any of these ports is used just override the properties in `docker-compose.yml` file or change them directly in `src/main/resaurces/application.properties`
 
 ### Pocketbase admin dashboard can be accessed with these credentials:
 ```
 email = admin@gmail.com
 password = adminpassword
-url = http://localhost:83
+url = http://localhost:9090
 ```
 u can find schema of database in `./data/pb_schema.json`
 

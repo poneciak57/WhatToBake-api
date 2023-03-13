@@ -1,15 +1,5 @@
 version: '3'
 services:
-  reverse-proxy:
-    hostname: nginx
-    container_name: nginx
-    image: nginx:1.23
-    ports:
-      - "81:81" # WebClient (doesn't exist)
-      - "82:82" # Api
-      - "83:83" # Pocketbase
-    volumes:
-      - ./.data/nginx/:/etc/nginx/conf.d/
   api:
     hostname: api
     container_name: api
@@ -17,6 +7,8 @@ services:
     build:
       context: .
       dockerfile: main.dockerfile
+    ports:
+      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_INIT=true
@@ -37,6 +29,8 @@ services:
       args:
         PB_VERSION: 0.12.3
         ARCH: linux_amd64
+    ports:
+      - "9090:9090"
     volumes:
       - ./.data/pocketbase:/pb/pb_data
   neo4j:
