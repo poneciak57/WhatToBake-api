@@ -1,5 +1,6 @@
 package com.whattobake.api.Model;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +18,7 @@ public class Tag {
     @Id
     @GeneratedValue
     private Long id;
+
+    @NotNull
     private String name;
 }

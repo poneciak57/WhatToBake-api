@@ -15,9 +15,11 @@ import reactor.core.publisher.Mono;
 public class TagService {
 
     private final TagRepository tagRepository;
+
     public Flux<Tag> allTags() {
         return tagRepository.findAll();
     }
+
     public Mono<Tag> oneById(Long id){
         return tagRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ id + " does not exist")));
@@ -29,11 +31,13 @@ public class TagService {
                 .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ tagUpdateRequest.getId() + " does not exist")))
                 .flatMap(e -> tagRepository.save(tagUpdateRequest.toModel()));
     }
+
     public Mono<Void> deleteTag(Long id){
         return tagRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ id + " does not exist")))
                 .flatMap(tagRepository::delete);
     }
+
     public Mono<Tag> newTag(TagInsertRequest tagInsertRequest){
         return tagRepository.save(tagInsertRequest.toModel());
     }
