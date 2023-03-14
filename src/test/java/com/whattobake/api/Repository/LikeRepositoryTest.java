@@ -84,6 +84,39 @@ class LikeRepositoryTest extends BaseIntegrationTestEmbeddedDB {
     }
 
     @Test
+    @DisplayName("like, when recipe and user exist and also user already liked that recipe, should return mono of recipe")
+    public void testLikeRecipe_whenRecipeAndUserExistAndUserAlreadyLikedTheRecipe_thenReturnMonoOfRecipe() {
+        Recipe testRecipe = addTestRecipe();
+        testRecipe.setLikes(testRecipe.getLikes() + 1);
+        client.query("""
+               MATCH (recipe:RECIPE) WHERE ID(recipe) = $rid
+               MERGE (user:USER{pbId:$pbId})-[:LIKES{date:datetime()}]->(recipe)
+               RETURN *""")
+                .bind(testRecipe.getId()).to("rid")
+                .bind(UserCreator.VALID_ID).to("pbId")
+                .run().block();
+        StepVerifier.create(likeRepository.like(testRecipe.getId(), UserCreator.VALID_ID))
+                .expectSubscription()
+                .expectNext(testRecipe)
+                .verifyComplete();
+        client.query("""
+                        MATCH (user:USER{pbId: $pbId})-[like:LIKES]->(recipe:RECIPE)
+                        RETURN user.pbId AS uid, COUNT(like) AS likes, ID(recipe) AS recipeId
+                        """)
+                .bind(UserCreator.VALID_ID).to("pbId")
+                .fetch().first()
+                .as(StepVerifier::create)
+                .expectSubscription()
+                .consumeNextWith(row -> {
+                    Assertions.assertEquals(UserCreator.VALID_ID, row.get("uid"));
+                    Assertions.assertEquals(testRecipe.getLikes(), row.get("likes"));
+                    Assertions.assertEquals(testRecipe.getId(), row.get("recipeId"));
+                })
+                .verifyComplete();
+        checkCount(1L,1L,1L);
+    }
+
+    @Test
     @DisplayName("like, when recipe exist and user doesnt, should return mono of recipe")
     public void testLikeRecipe_whenRecipeExistsAndUserDoesnt_thenReturnMonoOfRecipe() {
         Recipe testRecipe = addTestRecipe();
