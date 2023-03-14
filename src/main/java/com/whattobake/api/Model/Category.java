@@ -17,6 +17,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Category {
+
     @Id
     @GeneratedValue
     private Long id;

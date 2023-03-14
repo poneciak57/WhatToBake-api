@@ -1,6 +1,7 @@
 package com.whattobake.api.Model;
 
 import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -45,9 +46,10 @@ public class Recipe {
 
     @Nullable
     @Relationship("NEEDS")
-    private List<Product> products;
+    private List<@Valid Product> products;
 
     @Nullable
     @Relationship("HAS_TAG")
-    private List<Tag> tags;
+    private List<@Valid Tag> tags;
+
 }
