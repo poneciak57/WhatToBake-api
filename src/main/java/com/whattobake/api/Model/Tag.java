@@ -17,6 +17,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 @NoArgsConstructor
 @Builder
 public class Tag {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -25,4 +26,5 @@ public class Tag {
     @NotEmpty
     @Size(max = 30)
     private String name;
+
 }

@@ -1,6 +1,7 @@
 package com.whattobake.api.Model;
 
 import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -30,6 +31,7 @@ public class Product {
     private String name;
 
     @Nullable
+    @Valid
     @Relationship("HAS_CATEGORY")
     private Category category;
 
