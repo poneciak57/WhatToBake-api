@@ -14,10 +14,12 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class LikeRepositoryImpl implements LikeRepository {
+
     private final RecipeMapper recipeMapper;
+
     private final ReactiveNeo4jClient client;
 
-    public Flux<Recipe> getRecipes(String pbUid){
+    public Flux<Recipe> getRecipes(String pbUid) {
         String q = """
             MATCH (user:USER{pbId:$pbId})-[l:LIKES]->(recipe:RECIPE)
             RETURN""" + RecipeMapper.RETURN + """
@@ -26,17 +28,17 @@ public class LikeRepositoryImpl implements LikeRepository {
         return recipeMapper.resultAsFlux(recipeMapper.getMapperQueryNoAddon(q), Map.of("pbId",pbUid));
     }
 
-    public Mono<Recipe> like(Long id, String pbUid){
+    public Mono<Recipe> like(Long id, String pbUid) {
         String q = """
-            MERGE (user:USER{pbId:$pbId})
-            WITH user
             MATCH (recipe:RECIPE) WHERE ID(recipe) = $rid
+            MERGE (user:USER{pbId:$pbId})
+            WITH user, recipe
             MERGE (user)-[:LIKES{date:datetime()}]->(recipe)
             RETURN""";
         return recipeMapper.resultAsMono(recipeMapper.getMapperQuery(q),Map.of("pbId",pbUid,"rid",id));
     }
 
-    public Mono<Boolean> unlike(Long id, String pbUid){
+    public Mono<Boolean> unlike(Long id, String pbUid) {
         String q = """
             MATCH (user:USER{pbId: $pbId})
             MATCH (recipe:RECIPE) WHERE ID(recipe) = $rid
@@ -44,6 +46,6 @@ public class LikeRepositoryImpl implements LikeRepository {
             DELETE l;
         """;
         return client.query(q).bindAll(Map.of("pbId",pbUid,"rid",id)).run()
-                .map(resultSummary -> resultSummary.counters().nodesDeleted() != 0);
+                .map(resultSummary -> resultSummary.counters().relationshipsDeleted() != 0);
     }
 }
