@@ -46,6 +46,6 @@ public class LikeRepositoryImpl implements LikeRepository {
             DELETE l;
         """;
         return client.query(q).bindAll(Map.of("pbId",pbUid,"rid",id)).run()
-                .map(resultSummary -> resultSummary.counters().nodesDeleted() != 0);
+                .map(resultSummary -> resultSummary.counters().relationshipsDeleted() != 0);
     }
 }
