@@ -21,7 +21,9 @@ public class RecipeRepositoryImpl {
 
     @Value("${w2b.recipes.pageCount}")
     private Long RECIPES_PER_PAGE;
+
     private final ReactiveNeo4jClient client;
+
     private final RecipeMapper recipeMapper;
 
     @SuppressWarnings("unused")
