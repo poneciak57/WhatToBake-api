@@ -33,7 +33,9 @@ public class LikeRepositoryImpl implements LikeRepository {
             MATCH (recipe:RECIPE) WHERE ID(recipe) = $rid
             MERGE (user:USER{pbId:$pbId})
             WITH user, recipe
-            MERGE (user)-[:LIKES{date:datetime()}]->(recipe)
+            MERGE (user)-[like:LIKES]->(recipe)
+            ON CREATE
+            SET like.date = datetime()
             RETURN""";
         return recipeMapper.resultAsMono(recipeMapper.getMapperQuery(q),Map.of("pbId",pbUid,"rid",id));
     }
