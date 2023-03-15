@@ -65,6 +65,8 @@ public class RecipeRepositoryImpl {
             q +=" ORDER BY " + recipeFilters.getProductOrder().stream()
                     .map(RecipeProductOrder::getValue)
                     .collect(Collectors.joining(",")) + ", recipe.id ASC ";
+        } else {
+            q += " ORDER BY recipe.id ASC";
         }
         q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
         return recipeMapper.resultAsFlux(recipeMapper.getMapperQueryNoAddon(q),Map.of(
