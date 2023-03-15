@@ -23,7 +23,7 @@ import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import java.util.List;
 
 @Import({RecipeRepositoryImpl.class, LikeRepositoryImpl.class})
-public abstract class BaseRepositoryHelper extends BaseIntegrationTestEmbeddedDB {
+public abstract class BaseRepositoryHelper extends BaseIntegrationTestTestcontainers {
 
     @Autowired
     protected RecipeRepository recipeRepository;
