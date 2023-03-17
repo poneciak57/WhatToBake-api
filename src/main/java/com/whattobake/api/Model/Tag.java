@@ -7,9 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
+
+import java.time.LocalDateTime;
 
 @Node("TAG")
 @Data
@@ -26,5 +30,9 @@ public class Tag {
     @NotEmpty
     @Size(max = 30)
     private String name;
+
+    @CreatedDate
+    @Property(name = "creation_date")
+    private LocalDateTime creationDate;
 
 }

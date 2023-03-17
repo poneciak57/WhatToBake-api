@@ -4,7 +4,7 @@ import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Dto.InsertDto.RecipeInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.RecipeUpdateRequest;
-import com.whattobake.api.Enum.RecipeProductOrder;
+import com.whattobake.api.Enum.RecipeOrder;
 import com.whattobake.api.Enum.TagOption;
 import com.whattobake.api.Model.Recipe;
 
@@ -122,7 +122,7 @@ public class RecipeCreator {
                 1L,
                 List.of(),
                 List.of(),
-                List.of(RecipeProductOrder.HASNOT_ASC),
+                List.of(RecipeOrder.PRODUCTS_HASNOT_ASC),
                 TagOption.STRICT
         );
     }

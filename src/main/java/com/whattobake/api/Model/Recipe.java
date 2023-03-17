@@ -9,11 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.neo4j.core.schema.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Node("RECIPE")
@@ -42,6 +42,7 @@ public class Recipe {
     @Size(max = 50)
     private String image;
 
+    @ReadOnlyProperty
     private Long likes;
 
     @Nullable
@@ -52,4 +53,7 @@ public class Recipe {
     @Relationship("HAS_TAG")
     private List<@Valid Tag> tags;
 
+    @CreatedDate
+    @Property(name = "creation_date")
+    private LocalDateTime creationDate;
 }

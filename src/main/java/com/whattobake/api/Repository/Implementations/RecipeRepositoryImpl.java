@@ -2,7 +2,7 @@ package com.whattobake.api.Repository.Implementations;
 
 import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
-import com.whattobake.api.Enum.RecipeProductOrder;
+import com.whattobake.api.Enum.RecipeOrder;
 import com.whattobake.api.Mapers.RecipeMapper;
 import com.whattobake.api.Model.Recipe;
 import lombok.RequiredArgsConstructor;
@@ -49,20 +49,20 @@ public class RecipeRepositoryImpl {
         String q = """
                 MATCH (recipe:RECIPE)
                 """+ recipeFilters.getTagOption().getValue() +"""
-                CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) RETURN COUNT(p) AS prodCount }
-                CALL{ WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
+                CALL { WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) RETURN COUNT(p) AS prodCount }
+                CALL { WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
                 CALL { WITH recipe MATCH (recipe)<-[l:LIKES]-(:USER) RETURN COUNT(l) as likes }
                 RETURN""" + RecipeMapper.RETURN + """
                     ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts,
                     CASE prodCount
                         WHEN 0 THEN 0
-                        ELSE (HasProducts*100)/prodCount
+                        ELSE (HasProducts * 100) / prodCount
                     END AS Progress
                 """;
-        if(!recipeFilters.getProductOrder().isEmpty()){
-            q +=" ORDER BY " + recipeFilters.getProductOrder().stream()
-                    .map(RecipeProductOrder::getValue)
-                    .collect(Collectors.joining(",")) + ", recipe.id ASC ";
+        if(!recipeFilters.getOrderList().isEmpty()){
+            q +=" ORDER BY " + recipeFilters.getOrderList().stream()
+                    .map(RecipeOrder::getValue)
+                    .collect(Collectors.joining(","));
         }
         q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
         return recipeMapper.resultAsFlux(recipeMapper.getMapperQueryNoAddon(q),Map.of(
@@ -81,14 +81,14 @@ public class RecipeRepositoryImpl {
     @SuppressWarnings("unused")
     public Mono<Recipe> create(Map<String, Object> recipe) {
         String q = """
-                CREATE (recipe:RECIPE{title:$title,link:$link,image:$image})
+                CREATE (recipe:RECIPE{title:$title,link:$link,image:$image,create_date: datetime()})
                 WITH recipe
-                CALL{
+                CALL {
                     WITH recipe
                     MATCH (product:PRODUCT) WHERE ID(product) IN $products
                     MERGE (recipe)-[:NEEDS]->(product)
                 }
-                CALL{
+                CALL {
                     WITH recipe
                     MATCH (tag:TAG) WHERE ID(tag) IN $tags
                     MERGE (recipe)-[:HAS_TAG]->(tag)
@@ -105,13 +105,13 @@ public class RecipeRepositoryImpl {
             SET recipe.link = $link
             SET recipe.image = $image
             WITH recipe
-            CALL{ WITH recipe MATCH (recipe)-[r:NEEDS]->(:PRODUCT) DELETE r }
-            CALL{ WITH recipe
+            CALL { WITH recipe MATCH (recipe)-[r:NEEDS]->(:PRODUCT) DELETE r }
+            CALL { WITH recipe
                 MATCH (product:PRODUCT) WHERE ID(product) IN $products
                 MERGE (recipe)-[:NEEDS]->(product)
             }
-            CALL{ WITH recipe MATCH (recipe)-[r:HAS_TAG]->(:TAG) DELETE r }
-            CALL{ WITH recipe
+            CALL { WITH recipe MATCH (recipe)-[r:HAS_TAG]->(:TAG) DELETE r }
+            CALL { WITH recipe
                 MATCH (tag:TAG) WHERE ID(tag) IN $tags
                 MERGE (recipe)-[:HAS_TAG]->(tag)
             }
