@@ -1,5 +1,7 @@
 package com.whattobake.api.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,7 +15,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Node("CATEGORY")
 @Data
@@ -36,7 +38,9 @@ public class Category {
     private String icon;
 
     @CreatedDate
+    @JsonProperty("creation_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     @Property(name = "creation_date")
-    private LocalDateTime creationDate;
+    private Instant creationDate;
 
 }

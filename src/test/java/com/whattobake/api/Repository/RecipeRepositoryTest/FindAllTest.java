@@ -2,7 +2,7 @@ package com.whattobake.api.Repository.RecipeRepositoryTest;
 
 import com.whattobake.api.BaseRepositoryHelper;
 import com.whattobake.api.Dto.FilterDto.RecipeFilters;
-import com.whattobake.api.Enum.RecipeProductOrder;
+import com.whattobake.api.Enum.RecipeOrder;
 import com.whattobake.api.Enum.TagOption;
 import com.whattobake.api.Model.Category;
 import com.whattobake.api.Model.Product;
@@ -87,12 +87,12 @@ public class FindAllTest extends BaseRepositoryHelper {
         Recipe recipe2 = createRecipe(List.of(product2), List.of());
         Recipe recipe3 = createRecipe(List.of(), List.of());
         RecipeFilters filters = RecipeCreator.defaultFilters();
-        filters.setProductOrder(List.of(RecipeProductOrder.PROGRESS_DESC));
+        filters.setOrderList(List.of(RecipeOrder.PRODUCTS_PROGRESS_DESC));
 
         filters.setProducts(List.of(product1.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe1, recipe2, recipe3)
+                .expectNext(recipe1, recipe3, recipe2)
                 .verifyComplete();
 
         filters.setProducts(List.of(product2.getId()));
@@ -104,7 +104,7 @@ public class FindAllTest extends BaseRepositoryHelper {
         filters.setProducts(List.of());
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe1, recipe2, recipe3)
+                .expectNext(recipe3, recipe2, recipe1)
                 .verifyComplete();
 
     }
@@ -118,7 +118,7 @@ public class FindAllTest extends BaseRepositoryHelper {
         Recipe recipe2 = createRecipe(List.of(product2), List.of());
         Recipe recipe3 = createRecipe(List.of(), List.of());
         RecipeFilters filters = RecipeCreator.defaultFilters();
-        filters.setProductOrder(List.of(RecipeProductOrder.PROGRESS_DESC, RecipeProductOrder.HASNOT_ASC));
+        filters.setOrderList(List.of(RecipeOrder.PRODUCTS_PROGRESS_DESC, RecipeOrder.PRODUCTS_HASNOT_ASC));
 
         filters.setProducts(List.of(product1.getId()));
         StepVerifier.create(recipeRepository.findAll(filters))
@@ -140,7 +140,7 @@ public class FindAllTest extends BaseRepositoryHelper {
     }
 
     @Test
-    public void testFindAll_whenTagModeDefault_thenReturnFluxOfRecipeInCorrectOrder() {
+    public void testTagModeDefault_when2Tags4Recipes_thenReturnFluxOfRecipeInCorrectOrder() {
         Tag tag1 = createTag();
         Tag tag2 = createTag();
         Recipe recipe1 = createRecipe(List.of(), List.of(tag1, tag2));
@@ -152,13 +152,13 @@ public class FindAllTest extends BaseRepositoryHelper {
         filters.setTags(List.of(tag2.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe1, recipe3)
+                .expectNext(recipe3, recipe1)
                 .verifyComplete();
 
         filters.setTags(List.of(tag1.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe1, recipe2)
+                .expectNext(recipe2, recipe1)
                 .verifyComplete();
 
         filters.setTags(List.of(tag1.getId(), tag2.getId()));
@@ -183,7 +183,7 @@ public class FindAllTest extends BaseRepositoryHelper {
     }
 
     @Test
-    public void testFindAll_whenTagModeStrict_thenReturnFluxOfRecipesWithMatchingTag() {
+    public void testTagModeStrict_when3Tags4Recipes_thenReturnFluxOfRecipesWithMatchingTag() {
         Tag tag1 = createTag();
         Tag tag2 = createTag();
         Tag tag3 = createTag();

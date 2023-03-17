@@ -1,5 +1,6 @@
 package com.whattobake.api.Model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,7 +14,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Node("TAG")
 @Data
@@ -32,7 +33,8 @@ public class Tag {
     private String name;
 
     @CreatedDate
+    @JsonProperty("creation_date")
     @Property(name = "creation_date")
-    private LocalDateTime creationDate;
+    private Instant creationDate;
 
 }
