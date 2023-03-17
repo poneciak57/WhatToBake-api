@@ -9,10 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.neo4j.core.schema.*;
+
+import java.time.LocalDateTime;
 
 @Node("PRODUCT")
 @Data
@@ -34,5 +34,9 @@ public class Product {
     @Valid
     @Relationship("HAS_CATEGORY")
     private Category category;
+
+    @CreatedDate
+    @Property(name = "creation_date")
+    private LocalDateTime creationDate;
 
 }
