@@ -62,7 +62,7 @@ public class RecipeRepositoryImpl {
         if(!recipeFilters.getProductOrder().isEmpty()){
             q +=" ORDER BY " + recipeFilters.getProductOrder().stream()
                     .map(RecipeProductOrder::getValue)
-                    .collect(Collectors.joining(",")) + ", recipe.id ASC ";
+                    .collect(Collectors.joining(",")) + ", recipe.creation_date ASC ";
         }
         q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
         return recipeMapper.resultAsFlux(recipeMapper.getMapperQueryNoAddon(q),Map.of(
@@ -81,7 +81,7 @@ public class RecipeRepositoryImpl {
     @SuppressWarnings("unused")
     public Mono<Recipe> create(Map<String, Object> recipe) {
         String q = """
-                CREATE (recipe:RECIPE{title:$title,link:$link,image:$image})
+                CREATE (recipe:RECIPE{title:$title,link:$link,image:$image,create_date: datetime()})
                 WITH recipe
                 CALL{
                     WITH recipe
