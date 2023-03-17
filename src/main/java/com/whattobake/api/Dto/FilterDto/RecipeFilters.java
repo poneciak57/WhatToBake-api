@@ -1,6 +1,6 @@
 package com.whattobake.api.Dto.FilterDto;
 
-import com.whattobake.api.Enum.RecipeProductOrder;
+import com.whattobake.api.Enum.RecipeOrder;
 import com.whattobake.api.Enum.TagOption;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
@@ -28,7 +28,7 @@ public class RecipeFilters implements com.whattobake.api.Interfaces.NotNull<Reci
     private List<@Min(0) @NotNull Long> tags;
 
     @Nullable
-    private List<@Valid RecipeProductOrder> productOrder;
+    private List<@Valid RecipeOrder> orderList;
 
     @Valid
     @Nullable
@@ -39,7 +39,7 @@ public class RecipeFilters implements com.whattobake.api.Interfaces.NotNull<Reci
         page = (page == null ? 0 : page);
         products = (products == null ? List.of() : products);
         tags = (tags == null ? List.of() : tags);
-        productOrder = (productOrder == null ? List.of() : productOrder);
+        orderList = (orderList == null ? List.of(RecipeOrder.CREATION_DATE_DESC) : orderList);
         tagOption = (tagOption == null ? TagOption.NORMAL : tagOption);
         return this;
     }
