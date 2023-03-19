@@ -8,10 +8,10 @@ import com.whattobake.api.Repository.Implementations.InitRepositoryImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.Neo4jContainer;
@@ -26,6 +26,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 @Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DataNeo4jTest
 @Transactional(propagation = Propagation.NEVER)
 @Import({
@@ -40,15 +41,14 @@ public abstract class BaseIntegrationTestTestcontainers {
     static final Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5.3")
             .withAdminPassword("testAdminPassword")
                 .withLabsPlugins(Neo4jLabsPlugin.APOC)
-                .withStartupTimeout(Duration.ofMinutes(5));
+                .withStartupTimeout(Duration.ofMinutes(15));
 
     @AfterAll
     public static void closeDB() {
         neo4jContainer.close();
     }
 
-    @DynamicPropertySource
-    static void neo4jProperties(DynamicPropertyRegistry registry) {
+    public static void connectToNeo4jContainer(DynamicPropertyRegistry registry) {
         neo4jContainer.start();
         registry.add("spring.neo4j.uri", neo4jContainer::getBoltUrl);
         registry.add("spring.neo4j.authentication.username", () -> "neo4j");

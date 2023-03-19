@@ -16,6 +16,7 @@ import com.whattobake.api.Util.ProductCreator;
 import com.whattobake.api.Util.RecipeCreator;
 import com.whattobake.api.Util.TagCreator;
 import com.whattobake.api.Util.UserCreator;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
@@ -42,6 +43,11 @@ public abstract class BaseRepositoryHelper extends BaseIntegrationTestTestcontai
 
     @Autowired
     protected ReactiveNeo4jClient client;
+
+    @BeforeEach
+    public void setUp() {
+        client.query("MATCH (n) DETACH DELETE n;").run().block();
+    }
 
     protected Recipe prepareRecipeWithEverything() {
         Category c1 = createCategory();

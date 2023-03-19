@@ -10,27 +10,25 @@ import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Model.Tag;
 import com.whattobake.api.Util.RecipeCreator;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import reactor.test.StepVerifier;
 
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 public class FindAllTest extends BaseRepositoryHelper {
 
+    @DynamicPropertySource
+    public static void neo4jProperties(DynamicPropertyRegistry registry) {
+        connectToNeo4jContainer(registry);
+    }
 
     @DynamicPropertySource
     public static void setRecipePageCountTo3ForTests(DynamicPropertyRegistry registry) {
         registry.add("w2b.recipes.pageCount", () -> 3);
-    }
-
-    @BeforeEach
-    public void setUp() {
-        client.query("MATCH (n) DETACH DELETE n;").run().block();
     }
 
     @Test
@@ -44,23 +42,13 @@ public class FindAllTest extends BaseRepositoryHelper {
 
     @Test
     public void testPaging_whenOtherFiltersAreDefault_thenReturnFluxOfRecipe() {
-        Category c1 = createCategory();
-        Product p1 = createProduct(c1);
-        Product p2 = createProduct(c1);
-        Tag t1 = createTag();
-        Recipe recipe1 = createRecipe(List.of(p1, p2), List.of(t1));
-        Recipe recipe2 = createRecipe(List.of(p1, p2), List.of(t1));
-        Recipe recipe3 = createRecipe(List.of(p1, p2), List.of(t1));
-        Recipe recipe4 = createRecipe(List.of(p1, p2), List.of(t1));
+        prepareRecipeWithEverything();
+        prepareRecipeWithEverything();
+        prepareRecipeWithEverything();
+        prepareRecipeWithEverything();
         RecipeFilters filters = RecipeCreator.defaultFilters();
 
         filters.setPage(0L);
-        var l = recipeRepository.findAll(filters).buffer().blockLast();
-        log.info(Objects.requireNonNull(Objects.requireNonNull(l).stream().map(Recipe::getId).toList()).toString());
-        log.info(recipe1.toString());
-        log.info(recipe2.toString());
-        log.info(recipe3.toString());
-        log.info(recipe4.toString());
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
                 .expectNextCount(3L)
@@ -92,19 +80,25 @@ public class FindAllTest extends BaseRepositoryHelper {
         filters.setProducts(List.of(product1.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe1, recipe3, recipe2)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe1.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe3.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe2.getId()))
                 .verifyComplete();
 
         filters.setProducts(List.of(product2.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe2, recipe1, recipe3)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe2.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe1.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe3.getId()))
                 .verifyComplete();
 
         filters.setProducts(List.of());
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe3, recipe2, recipe1)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe3.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe2.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe1.getId()))
                 .verifyComplete();
 
     }
@@ -123,19 +117,25 @@ public class FindAllTest extends BaseRepositoryHelper {
         filters.setProducts(List.of(product1.getId()));
         StepVerifier.create(recipeRepository.findAll(filters))
                 .expectSubscription()
-                .expectNext(recipe1, recipe3, recipe2)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe1.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe3.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe2.getId()))
                 .verifyComplete();
 
         filters.setProducts(List.of(product2.getId()));
         StepVerifier.create(recipeRepository.findAll(filters))
                 .expectSubscription()
-                .expectNext(recipe2, recipe1, recipe3)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe2.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe1.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe3.getId()))
                 .verifyComplete();
 
         filters.setProducts(List.of());
         StepVerifier.create(recipeRepository.findAll(filters))
                 .expectSubscription()
-                .expectNext(recipe3, recipe2, recipe1)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe3.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe2.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe1.getId()))
                 .verifyComplete();
     }
 
@@ -152,19 +152,21 @@ public class FindAllTest extends BaseRepositoryHelper {
         filters.setTags(List.of(tag2.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe3, recipe1)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe3.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe1.getId()))
                 .verifyComplete();
 
         filters.setTags(List.of(tag1.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe2, recipe1)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe2.getId()))
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe1.getId()))
                 .verifyComplete();
 
         filters.setTags(List.of(tag1.getId(), tag2.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe1)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe1.getId()))
                 .verifyComplete();
 
         filters.setTags(List.of());
@@ -197,25 +199,25 @@ public class FindAllTest extends BaseRepositoryHelper {
         filters.setTags(List.of(tag1.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe2)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe2.getId()))
                 .verifyComplete();
 
         filters.setTags(List.of(tag2.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe3)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe3.getId()))
                 .verifyComplete();
 
         filters.setTags(List.of(tag1.getId(), tag2.getId()));
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe1)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe1.getId()))
                 .verifyComplete();
 
         filters.setTags(List.of());
         StepVerifier.create(recipeRepository.findAll(filters).log())
                 .expectSubscription()
-                .expectNext(recipe4)
+                .consumeNextWith(recipe -> Assertions.assertEquals(recipe.getId(), recipe4.getId()))
                 .verifyComplete();
 
         filters.setTags(List.of(tag3.getId()));
