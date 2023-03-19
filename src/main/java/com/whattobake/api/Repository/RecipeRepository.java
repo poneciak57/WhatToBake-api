@@ -11,10 +11,16 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 @Repository
-public interface RecipeRepository extends ReactiveNeo4jRepository<Recipe, Long>{
+public interface RecipeRepository extends ReactiveNeo4jRepository<Recipe, Long> {
+
     Flux<Recipe> findAll(RecipeFilters recipeFilters);
+
     Mono<Recipe> findOne(Long id);
+
     Mono<RecipeInfo> info(RecipeFilters recipeFilters);
+
     Mono<Recipe> create(Map<String, Object> recipe);
+
     Mono<Recipe> update(Map<String, Object> recipe);
+
 }

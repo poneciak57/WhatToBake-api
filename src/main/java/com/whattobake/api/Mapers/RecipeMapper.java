@@ -11,17 +11,18 @@ public class RecipeMapper extends Neo4jResultMapper<Recipe>{
             id: ID(recipe),
             .*,
             likes: size([(recipe)<-[l:LIKES]-(:USER) | {}]),
-            products: [ (recipe)-[:NEEDS]->(p:PRODUCT)-[:HAS_CATEGORY]->(c:CATEGORY) | p{
+            products: apoc.coll.sortMaps([ (recipe)-[:NEEDS]->(p:PRODUCT) | p{
                 id: ID(p),
                 .*,
-                category: c{
+                category: [(p:PRODUCT)-[:HAS_CATEGORY]->(c:CATEGORY) | c{
                     id: ID(c),
                     .*
-             }}],
-            tags: [ (recipe)-[:HAS_TAG]->(t:TAG) | t{
+                }][0]
+            }], "^id"),
+            tags:  apoc.coll.sortMaps([ (recipe)-[:HAS_TAG]->(t:TAG) | t{
                 id: ID(t),
                 .*
-            }]
+            }], "^id")
         }
     """;
     static public final String ROW_NAME = "recipe";

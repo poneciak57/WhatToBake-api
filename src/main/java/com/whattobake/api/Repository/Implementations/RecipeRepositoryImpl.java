@@ -81,7 +81,9 @@ public class RecipeRepositoryImpl {
     @SuppressWarnings("unused")
     public Mono<Recipe> create(Map<String, Object> recipe) {
         String q = """
-                CREATE (recipe:RECIPE{title:$title,link:$link,image:$image,create_date: datetime()})
+                MERGE (recipe:RECIPE{title:$title,link:$link,image:$image})
+                ON CREATE
+                    SET recipe.creation_date = datetime()
                 WITH recipe
                 CALL {
                     WITH recipe

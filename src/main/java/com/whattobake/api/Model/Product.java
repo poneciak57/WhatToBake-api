@@ -1,5 +1,6 @@
 package com.whattobake.api.Model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,9 +11,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.neo4j.core.schema.*;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
+import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Node("PRODUCT")
 @Data
@@ -36,7 +41,8 @@ public class Product {
     private Category category;
 
     @CreatedDate
+    @JsonProperty("creation_date")
     @Property(name = "creation_date")
-    private LocalDateTime creationDate;
+    private Instant creationDate;
 
 }

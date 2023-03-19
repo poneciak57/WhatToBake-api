@@ -1,6 +1,7 @@
 package com.whattobake.api.Mapers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -29,6 +30,7 @@ public class Neo4jResultMapper<Model> {
 
     public Mono<Model> resultAsMono(MapperQuery query, Map<String,Object> params){
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         return client.query(query.getQuery())
                 .bindAll(params)
                 .fetchAs(modelClass)
@@ -37,6 +39,7 @@ public class Neo4jResultMapper<Model> {
     }
     public Flux<Model> resultAsFlux(MapperQuery query, Map<String,Object> params){
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         return client.query(query.getQuery())
                 .bindAll(params)
                 .fetchAs(modelClass)
