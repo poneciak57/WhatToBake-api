@@ -1,6 +1,5 @@
 package com.whattobake.api.Model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -39,7 +38,6 @@ public class Category {
 
     @CreatedDate
     @JsonProperty("creation_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     @Property(name = "creation_date")
     private Instant creationDate;
 
