@@ -1,8 +1,8 @@
 package com.whattobake.api.Repository.RecipeRepositoryTest;
 
-import com.whattobake.api.BaseRepositoryHelper;
+import com.whattobake.api.Util.Helpers.BaseRepositoryTestHelper;
 import com.whattobake.api.Model.Recipe;
-import com.whattobake.api.Util.RecipeCreator;
+import com.whattobake.api.Util.Creators.RecipeCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -10,7 +10,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import reactor.test.StepVerifier;
 
 @Slf4j
-public class FindOneByIdTest extends BaseRepositoryHelper {
+public class FindOneByIdTest extends BaseRepositoryTestHelper {
 
     @DynamicPropertySource
     public static void neo4jProperties(DynamicPropertyRegistry registry) {

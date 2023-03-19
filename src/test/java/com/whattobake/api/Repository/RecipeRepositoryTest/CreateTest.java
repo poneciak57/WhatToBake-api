@@ -1,13 +1,13 @@
 package com.whattobake.api.Repository.RecipeRepositoryTest;
 
-import com.whattobake.api.BaseRepositoryHelper;
+import com.whattobake.api.Util.Helpers.BaseRepositoryTestHelper;
 import com.whattobake.api.Model.Category;
 import com.whattobake.api.Model.Product;
 import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Model.Tag;
-import com.whattobake.api.Util.ProductCreator;
-import com.whattobake.api.Util.RecipeCreator;
-import com.whattobake.api.Util.TagCreator;
+import com.whattobake.api.Util.Creators.ProductCreator;
+import com.whattobake.api.Util.Creators.RecipeCreator;
+import com.whattobake.api.Util.Creators.TagCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
-public class CreateTest extends BaseRepositoryHelper {
+public class CreateTest extends BaseRepositoryTestHelper {
 
     @DynamicPropertySource
     public static void neo4jProperties(DynamicPropertyRegistry registry) {

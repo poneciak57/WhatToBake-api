@@ -1,6 +1,6 @@
 package com.whattobake.api.Repository.RecipeRepositoryTest;
 
-import com.whattobake.api.BaseRepositoryHelper;
+import com.whattobake.api.Util.Helpers.BaseRepositoryTestHelper;
 import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Enum.RecipeOrder;
 import com.whattobake.api.Enum.TagOption;
@@ -8,7 +8,7 @@ import com.whattobake.api.Model.Category;
 import com.whattobake.api.Model.Product;
 import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Model.Tag;
-import com.whattobake.api.Util.RecipeCreator;
+import com.whattobake.api.Util.Creators.RecipeCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import reactor.test.StepVerifier;
 import java.util.List;
 
 @Slf4j
-public class FindAllTest extends BaseRepositoryHelper {
+public class FindAllTest extends BaseRepositoryTestHelper {
 
     @DynamicPropertySource
     public static void neo4jProperties(DynamicPropertyRegistry registry) {

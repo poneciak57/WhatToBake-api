@@ -1,4 +1,4 @@
-package com.whattobake.api.Util;
+package com.whattobake.api.Util.Creators;
 
 public class UserCreator {
 

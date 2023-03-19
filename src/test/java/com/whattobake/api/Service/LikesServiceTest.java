@@ -2,8 +2,8 @@ package com.whattobake.api.Service;
 
 import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Repository.LikeRepository;
-import com.whattobake.api.Util.RecipeCreator;
-import com.whattobake.api.Util.UserCreator;
+import com.whattobake.api.Util.Creators.RecipeCreator;
+import com.whattobake.api.Util.Creators.UserCreator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

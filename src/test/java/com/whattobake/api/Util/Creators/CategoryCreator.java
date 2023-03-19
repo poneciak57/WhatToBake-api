@@ -1,4 +1,4 @@
-package com.whattobake.api.Util;
+package com.whattobake.api.Util.Creators;
 
 import com.whattobake.api.Dto.InsertDto.CategoryInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.CategoryUpdateRequest;

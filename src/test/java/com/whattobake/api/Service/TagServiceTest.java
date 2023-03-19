@@ -2,7 +2,7 @@ package com.whattobake.api.Service;
 
 import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Repository.TagRepository;
-import com.whattobake.api.Util.TagCreator;
+import com.whattobake.api.Util.Creators.TagCreator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
