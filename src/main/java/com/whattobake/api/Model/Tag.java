@@ -34,7 +34,6 @@ public class Tag {
     private String name;
 
     @CreatedDate
-//    @JsonProperty("creation_date")
     @Property(name = "creation_date")
     private Instant creationDate;
 

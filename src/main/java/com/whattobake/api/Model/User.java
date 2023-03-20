@@ -1,5 +1,6 @@
 package com.whattobake.api.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.whattobake.api.Dto.SecurityDto.PbUser;
 import com.whattobake.api.Enum.UserRole;
@@ -22,6 +23,7 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User implements Principal {
 
     @Id

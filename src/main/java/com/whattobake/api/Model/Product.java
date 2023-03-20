@@ -1,6 +1,6 @@
 package com.whattobake.api.Model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -23,6 +23,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 public class Product {
 
@@ -41,7 +42,6 @@ public class Product {
     private Category category;
 
     @CreatedDate
-    @JsonProperty("creation_date")
     @Property(name = "creation_date")
     private Instant creationDate;
 
