@@ -1,6 +1,6 @@
 package com.whattobake.api.Repository;
 
-import com.whattobake.api.BaseIntegrationTestEmbeddedDB;
+import com.whattobake.api.Util.Helpers.BaseIntegrationTestEmbeddedDB;
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Enum.ProductOrder;
 import com.whattobake.api.Model.Category;

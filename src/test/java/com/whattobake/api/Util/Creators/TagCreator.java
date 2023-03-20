@@ -1,4 +1,4 @@
-package com.whattobake.api.Util;
+package com.whattobake.api.Util.Creators;
 
 import com.whattobake.api.Dto.InsertDto.TagInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.TagUpdateRequest;

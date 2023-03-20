@@ -2,7 +2,7 @@ package com.whattobake.api.Service;
 
 import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Repository.CategoryRepository;
-import com.whattobake.api.Util.CategoryCreator;
+import com.whattobake.api.Util.Creators.CategoryCreator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

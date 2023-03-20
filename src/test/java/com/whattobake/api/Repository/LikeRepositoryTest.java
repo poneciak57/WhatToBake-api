@@ -1,11 +1,11 @@
 package com.whattobake.api.Repository;
 
-import com.whattobake.api.BaseIntegrationTestEmbeddedDB;
+import com.whattobake.api.Util.Helpers.BaseIntegrationTestEmbeddedDB;
 import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Repository.Implementations.LikeRepositoryImpl;
 import com.whattobake.api.Repository.Implementations.RecipeRepositoryImpl;
-import com.whattobake.api.Util.RecipeCreator;
-import com.whattobake.api.Util.UserCreator;
+import com.whattobake.api.Util.Creators.RecipeCreator;
+import com.whattobake.api.Util.Creators.UserCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

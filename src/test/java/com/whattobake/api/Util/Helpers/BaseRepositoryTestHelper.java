@@ -1,4 +1,4 @@
-package com.whattobake.api;
+package com.whattobake.api.Util.Helpers;
 
 import com.whattobake.api.Model.Category;
 import com.whattobake.api.Model.Product;
@@ -11,11 +11,11 @@ import com.whattobake.api.Repository.LikeRepository;
 import com.whattobake.api.Repository.ProductRepository;
 import com.whattobake.api.Repository.RecipeRepository;
 import com.whattobake.api.Repository.TagRepository;
-import com.whattobake.api.Util.CategoryCreator;
-import com.whattobake.api.Util.ProductCreator;
-import com.whattobake.api.Util.RecipeCreator;
-import com.whattobake.api.Util.TagCreator;
-import com.whattobake.api.Util.UserCreator;
+import com.whattobake.api.Util.Creators.CategoryCreator;
+import com.whattobake.api.Util.Creators.ProductCreator;
+import com.whattobake.api.Util.Creators.RecipeCreator;
+import com.whattobake.api.Util.Creators.TagCreator;
+import com.whattobake.api.Util.Creators.UserCreator;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -24,7 +24,7 @@ import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import java.util.List;
 
 @Import({RecipeRepositoryImpl.class, LikeRepositoryImpl.class})
-public abstract class BaseRepositoryHelper extends BaseIntegrationTestTestcontainers {
+public abstract class BaseRepositoryTestHelper extends BaseRepositoryTestTestcontainers {
 
     @Autowired
     protected RecipeRepository recipeRepository;
