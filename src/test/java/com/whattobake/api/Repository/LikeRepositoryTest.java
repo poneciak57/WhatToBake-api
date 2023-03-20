@@ -1,40 +1,26 @@
 package com.whattobake.api.Repository;
 
-import com.whattobake.api.Util.Helpers.BaseIntegrationTestEmbeddedDB;
 import com.whattobake.api.Model.Recipe;
-import com.whattobake.api.Repository.Implementations.LikeRepositoryImpl;
-import com.whattobake.api.Repository.Implementations.RecipeRepositoryImpl;
 import com.whattobake.api.Util.Creators.RecipeCreator;
 import com.whattobake.api.Util.Creators.UserCreator;
+import com.whattobake.api.Util.Helpers.BaseRepositoryTestHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import reactor.test.StepVerifier;
 
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Import({LikeRepositoryImpl.class, RecipeRepositoryImpl.class})
-class LikeRepositoryTest extends BaseIntegrationTestEmbeddedDB {
+class LikeRepositoryTest extends BaseRepositoryTestHelper {
 
-    @Autowired
-    private LikeRepository likeRepository;
-
-    @Autowired
-    private RecipeRepository recipeRepository;
-
-    @Autowired
-    private ReactiveNeo4jClient client;
-
-    @BeforeEach
-    public void setUp() {
-        client.query("MATCH (n) DETACH DELETE n;").run().block();
+    @DynamicPropertySource
+    public static void neo4jProperties(DynamicPropertyRegistry registry) {
+        connectToNeo4jContainer(registry);
     }
 
     @Test

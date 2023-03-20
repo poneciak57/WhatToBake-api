@@ -1,11 +1,11 @@
 package com.whattobake.api.Repository;
 
-import com.whattobake.api.Util.Helpers.BaseIntegrationTestEmbeddedDB;
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Enum.ProductOrder;
 import com.whattobake.api.Model.Category;
 import com.whattobake.api.Model.Product;
 import com.whattobake.api.Repository.Implementations.ProductRepositoryImpl;
+import com.whattobake.api.Util.Helpers.BaseIntegrationTestEmbeddedDB;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -143,7 +143,7 @@ class ProductRepositoryTest extends BaseIntegrationTestEmbeddedDB {
                 ).flatMap(p -> productRepository.update(Map.of(
                         "id", p.getId(),
                         "name", "example_product_updated",
-                        "category", 10L
+                        "category", category.getId() + 1
                 ))).as(StepVerifier::create)
                 .consumeNextWith(p -> {
                     Assertions.assertEquals(p.getName(), "example_product_updated");

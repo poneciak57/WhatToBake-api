@@ -23,6 +23,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 @DataNeo4jTest
+@Deprecated
 @Transactional(propagation = Propagation.NEVER)
 @Import({
         InitRepositoryImpl.class,

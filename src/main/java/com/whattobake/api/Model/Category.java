@@ -1,6 +1,7 @@
 package com.whattobake.api.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -38,6 +39,7 @@ public class Category {
     private String icon;
 
     @CreatedDate
+    @JsonProperty("creation_date")
     @Property(name = "creation_date")
     private Instant creationDate;
 

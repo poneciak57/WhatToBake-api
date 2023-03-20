@@ -1,6 +1,7 @@
 package com.whattobake.api.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -60,6 +61,7 @@ public class Recipe {
     private List<@Valid Tag> tags;
 
     @CreatedDate
+    @JsonProperty("creation_date")
     @Property(name = "creation_date")
     private Instant creationDate;
 
