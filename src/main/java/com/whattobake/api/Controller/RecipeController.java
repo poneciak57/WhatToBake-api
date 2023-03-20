@@ -20,7 +20,7 @@ import java.util.Optional;
 @Tag(name ="1. Recipe")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/recipe")
+@RequestMapping("/api/recipe")
 public class RecipeController {
 
     private final RecipeService recipeService;
@@ -30,7 +30,7 @@ public class RecipeController {
         return recipeFilters.flatMap(recipeService::info);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Flux<Recipe> getAllRecipes(@Valid @RequestBody Mono<Optional<RecipeFilters>> recipeFilters) {
         return recipeFilters.flatMapMany(recipeService::getAllRecipes);
     }
@@ -41,7 +41,7 @@ public class RecipeController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/")
+    @PostMapping("")
     public Mono<Recipe> newRecipe(@Valid @RequestBody Mono<RecipeInsertRequest> recipeInsertRequest) {
         return recipeInsertRequest.flatMap(recipeService::newRecipe);
     }

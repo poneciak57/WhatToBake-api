@@ -5,6 +5,7 @@ import com.whattobake.api.Security.SecurityHelper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -12,6 +13,7 @@ import java.security.Principal;
 
 @Tag(name ="6. Tests")
 @RestController
+@RequestMapping("/api")
 public class AppController {
 
     @GetMapping("test/ping")

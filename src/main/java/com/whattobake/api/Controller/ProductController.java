@@ -26,12 +26,12 @@ import java.util.Optional;
 @Tag(name ="2. Product")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/product")
+@RequestMapping("/api/product")
 public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public Flux<Product> getAllProducts(@Valid @RequestBody Mono<Optional<ProductFilters>> productFilters) {
         return productFilters.flatMapMany(productService::getAllProducts);
     }
@@ -42,7 +42,7 @@ public class ProductController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/")
+    @PostMapping("")
     public Mono<Product> newProduct(@Valid @RequestBody Mono<ProductInsertRequest> productInsertRequest) {
         return productInsertRequest.flatMap(productService::newProduct);
     }

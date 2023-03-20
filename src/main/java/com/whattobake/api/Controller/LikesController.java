@@ -16,13 +16,13 @@ import java.security.Principal;
 
 @Tag(name ="5. Recipes likes")
 @RestController
-@RequestMapping("/likes")
+@RequestMapping("/api/likes")
 @RequiredArgsConstructor
 public class LikesController {
 
     private final LikesService likesService;
 
-    @GetMapping("/all")
+    @GetMapping("")
     public Flux<Recipe> getLiked(Mono<Principal> principal) {
         return principal.map(SecurityHelper::UserFromPrincipal)
                 .map(User::getPbId)

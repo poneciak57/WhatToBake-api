@@ -15,13 +15,13 @@ import reactor.core.publisher.Mono;
 
 @Tag(name ="3. Category")
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/api/category")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public Flux<Category> allCategories() {
         return categoryService.allCategories();
     }
@@ -32,7 +32,7 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/")
+    @PostMapping("")
     public Mono<Category> newCategory(@Valid @RequestBody Mono<CategoryInsertRequest> categoryInsertRequest) {
         return categoryInsertRequest.flatMap(categoryService::newCategory);
     }
