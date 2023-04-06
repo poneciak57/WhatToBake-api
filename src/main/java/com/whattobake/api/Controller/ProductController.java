@@ -2,7 +2,7 @@ package com.whattobake.api.Controller;
 
 import com.whattobake.api.Dto.FilterDto.ProductFilters;
 import com.whattobake.api.Dto.InsertDto.ProductInsertRequest;
-import com.whattobake.api.Model.Product;
+import com.whattobake.api.Dto.ProductDto;
 import com.whattobake.api.Service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,28 +32,28 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("")
-    public Flux<Product> getAllProducts(@Valid @RequestBody Mono<Optional<ProductFilters>> productFilters) {
-        return productFilters.flatMapMany(productService::getAllProducts);
+    public Flux<ProductDto> getAllProducts(@Valid @RequestBody Mono<Optional<ProductFilters>> productFilters) {
+        return productFilters.flatMapMany(productService::getAllProducts).map(ProductDto::fromProduct);
     }
 
     @GetMapping("/{id}")
-    public Mono<Product> oneById(@Min(0) @NotNull @PathVariable("id") Long id) {
-        return productService.getOneById(id);
+    public Mono<ProductDto> oneById(@Min(0) @NotNull @PathVariable("id") Long id) {
+        return productService.getOneById(id).map(ProductDto::fromProduct);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
-    public Mono<Product> newProduct(@Valid @RequestBody Mono<ProductInsertRequest> productInsertRequest) {
-        return productInsertRequest.flatMap(productService::newProduct);
+    public Mono<ProductDto> newProduct(@Valid @RequestBody Mono<ProductInsertRequest> productInsertRequest) {
+        return productInsertRequest.flatMap(productService::newProduct).map(ProductDto::fromProduct);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Mono<Product> updateProduct(
+    public Mono<ProductDto> updateProduct(
             @Min(0) @NotNull @PathVariable("id") Long id,
             @Valid @RequestBody Mono<ProductInsertRequest> productInsertRequest) {
         return productInsertRequest.map(p->p.toUpdateRequest(id))
-                .flatMap(productService::updateProduct);
+                .flatMap(productService::updateProduct).map(ProductDto::fromProduct);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

@@ -1,7 +1,7 @@
 package com.whattobake.api.Controller;
 
 import com.whattobake.api.Dto.InsertDto.TagInsertRequest;
-import com.whattobake.api.Model.Tag;
+import com.whattobake.api.Dto.TagDto;
 import com.whattobake.api.Service.TagService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -32,29 +32,29 @@ public class TagController {
     private final TagService tagService;
 
     @GetMapping("")
-    public Flux<Tag> allTags() {
-        return tagService.allTags();
+    public Flux<TagDto> allTags() {
+        return tagService.allTags().map(TagDto::fromTag);
     }
 
     @GetMapping("/{id}")
-    public Mono<Tag> oneById(@Min(0) @NotNull @PathVariable("id") Long id) {
-        return tagService.oneById(id);
+    public Mono<TagDto> oneById(@Min(0) @NotNull @PathVariable("id") Long id) {
+        return tagService.oneById(id).map(TagDto::fromTag);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Mono<Tag> updateTag(
+    public Mono<TagDto> updateTag(
             @Min(0) @NotNull @PathVariable("id") Long id,
             @Valid @RequestBody Mono<TagInsertRequest> tagInsertRequest) {
         return tagInsertRequest.map(t -> t.toUpdateRequest(id))
-                .flatMap(tagService::updateTag);
+                .flatMap(tagService::updateTag).map(TagDto::fromTag);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Tag> newTag(@Valid @RequestBody Mono<TagInsertRequest> tagInsertRequest) {
-        return tagInsertRequest.flatMap(tagService::newTag);
+    public Mono<TagDto> newTag(@Valid @RequestBody Mono<TagInsertRequest> tagInsertRequest) {
+        return tagInsertRequest.flatMap(tagService::newTag).map(TagDto::fromTag);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
