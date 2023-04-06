@@ -29,6 +29,7 @@ public class RatingRepositoryImpl implements RatingRepository{
             ON CREATE
             SET rate.date = datetime()
             SET rate.stars = $stars
+            WITH recipe
             RETURN""";
         return recipeMapper.resultAsMono(recipeMapper.getMapperQuery(q), Map.of(
                 "pbId",pbUid,
