@@ -1,9 +1,9 @@
 package com.whattobake.api.Service;
 
 import com.whattobake.api.Dto.InsertDto.TagInsertRequest;
-import com.whattobake.api.Dto.TagDto;
 import com.whattobake.api.Dto.UpdateDto.TagUpdateRequest;
 import com.whattobake.api.Exception.NodeNotFound;
+import com.whattobake.api.Model.Tag;
 import com.whattobake.api.Repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,23 +16,20 @@ public class TagService {
 
     private final TagRepository tagRepository;
 
-    public Flux<TagDto> allTags() {
-        return tagRepository.findAll()
-                .map(TagDto::fromTag);
+    public Flux<Tag> allTags() {
+        return tagRepository.findAll();
     }
 
-    public Mono<TagDto> oneById(Long id) {
+    public Mono<Tag> oneById(Long id) {
         return tagRepository.findById(id)
-                .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ id + " does not exist")))
-                .map(TagDto::fromTag);
+                .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ id + " does not exist")));
     }
 
-    public Mono<TagDto> updateTag(TagUpdateRequest tagUpdateRequest) {
+    public Mono<Tag> updateTag(TagUpdateRequest tagUpdateRequest) {
         return tagRepository
                 .findById(tagUpdateRequest.getId())
                 .switchIfEmpty(Mono.error(new NodeNotFound("Tag with given id: "+ tagUpdateRequest.getId() + " does not exist")))
-                .flatMap(e -> tagRepository.save(tagUpdateRequest.toModel()))
-                .map(TagDto::fromTag);
+                .flatMap(e -> tagRepository.save(tagUpdateRequest.toModel()));
     }
 
     public Mono<Void> deleteTag(Long id) {
@@ -41,8 +38,7 @@ public class TagService {
                 .flatMap(tagRepository::delete);
     }
 
-    public Mono<TagDto> newTag(TagInsertRequest tagInsertRequest) {
-        return tagRepository.save(tagInsertRequest.toModel())
-                .map(TagDto::fromTag);
+    public Mono<Tag> newTag(TagInsertRequest tagInsertRequest) {
+        return tagRepository.save(tagInsertRequest.toModel());
     }
 }
