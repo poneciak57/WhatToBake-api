@@ -40,9 +40,10 @@ public class SecurityConfiguration {
                 .securityContextRepository(securityContextRepository)
 
                 .authorizeExchange()
-                .pathMatchers("/test/user").authenticated()
-                .pathMatchers("/test/admin").authenticated()
-                .pathMatchers("/likes/**").authenticated()
+                .pathMatchers("/api/test/user").authenticated()
+                .pathMatchers("/api/test/admin").authenticated()
+                .pathMatchers("/api/likes/**").authenticated()
+                .pathMatchers("/api/recipe/rating/**").authenticated()
                 .anyExchange().permitAll()
                 .and().build();
     }
