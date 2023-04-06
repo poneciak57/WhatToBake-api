@@ -52,6 +52,9 @@ public class Recipe {
     @ReadOnlyProperty
     private Long likes;
 
+    @ReadOnlyProperty
+    private Double rating;
+
     @Nullable
     @Relationship("NEEDS")
     private List<@Valid Product> products;

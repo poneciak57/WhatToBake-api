@@ -11,6 +11,11 @@ public class RecipeMapper extends Neo4jResultMapper<Recipe>{
             id: ID(recipe),
             .*,
             likes: size([(recipe)<-[l:LIKES]-(:USER) | {}]),
+            rating: reduce(sum = 0,x IN [(recipe)<-[rate:RATING]-(:USER) | rate.stars] | sum + x) /
+                CASE WHEN size([(recipe)<-[rate:RATING]-(:USER) | rate.stars]) = 0
+                    THEN 1
+                    ELSE size([(recipe)<-[rate:RATING]-(:USER) | rate.stars])
+                END,
             products: apoc.coll.sortMaps([ (recipe)-[:NEEDS]->(p:PRODUCT) | p{
                 id: ID(p),
                 .*,

@@ -11,6 +11,7 @@ public record RecipeDto(
         String link,
         String image,
         Long likes,
+        Double rating,
         List<ProductDto> products,
         List<TagDto> tags
 ) {
@@ -38,6 +39,7 @@ public record RecipeDto(
                 recipe.getLink(),
                 recipe.getImage(),
                 recipe.getLikes(),
+                recipe.getRating(),
                 productDtos,
                 tagDtos
         );
