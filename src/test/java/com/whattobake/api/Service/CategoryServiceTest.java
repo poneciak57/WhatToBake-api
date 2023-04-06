@@ -1,6 +1,5 @@
 package com.whattobake.api.Service;
 
-import com.whattobake.api.Dto.CategoryDto;
 import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Repository.CategoryRepository;
 import com.whattobake.api.Util.Creators.CategoryCreator;
@@ -48,7 +47,7 @@ class CategoryServiceTest {
     public void testAllCategories_whenIsOk_thenReturnFluxOfCategories(){
         StepVerifier.create(categoryService.allCategories())
                 .expectSubscription()
-                .expectNext(CategoryDto.fromCategory(CategoryCreator.valid()))
+                .expectNext(CategoryCreator.valid())
                 .verifyComplete();
     }
 
@@ -57,7 +56,7 @@ class CategoryServiceTest {
     public void testOneById_whenIdIsCorrect_thenReturnMonoOfCategory(){
         StepVerifier.create(categoryService.getOneById(CategoryCreator.VALID_ID))
                 .expectSubscription()
-                .expectNext(CategoryDto.fromCategory(CategoryCreator.valid()))
+                .expectNext(CategoryCreator.valid())
                 .verifyComplete();
     }
 
@@ -74,7 +73,7 @@ class CategoryServiceTest {
     public void testUpdateCategory_whenIdIsCorrect_thenReturnMonoOfCategory(){
         StepVerifier.create(categoryService.updateCategory(CategoryCreator.validUpdate()))
                 .expectSubscription()
-                .expectNext(CategoryDto.fromCategory(CategoryCreator.valid()))
+                .expectNext(CategoryCreator.valid())
                 .verifyComplete();
     }
 
@@ -110,7 +109,7 @@ class CategoryServiceTest {
     public void testNewCategory_whenOk_thenReturnMonoOfCategory(){
         StepVerifier.create(categoryService.newCategory(CategoryCreator.validInsert()))
                 .expectSubscription()
-                .expectNext(CategoryDto.fromCategory(CategoryCreator.valid()))
+                .expectNext(CategoryCreator.valid())
                 .verifyComplete();
     }
 
