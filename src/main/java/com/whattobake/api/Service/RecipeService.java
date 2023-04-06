@@ -3,9 +3,9 @@ package com.whattobake.api.Service;
 import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Dto.InsertDto.RecipeInsertRequest;
-import com.whattobake.api.Dto.RecipeDto;
 import com.whattobake.api.Dto.UpdateDto.RecipeUpdateRequest;
 import com.whattobake.api.Exception.NodeNotFound;
+import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,17 +23,15 @@ public class RecipeService {
         return recipeRepository.info(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
     }
 
-    public Flux<RecipeDto> getAllRecipes(Optional<RecipeFilters> recipeFilters) {
-        return recipeRepository.findAll(recipeFilters.orElse(new RecipeFilters()).fillDefaults())
-                .map(RecipeDto::fromRecipe);
+    public Flux<Recipe> getAllRecipes(Optional<RecipeFilters> recipeFilters) {
+        return recipeRepository.findAll(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
     }
-    public Mono<RecipeDto> getOneById(Long id) {
+    public Mono<Recipe> getOneById(Long id) {
         return recipeRepository.findOne(id)
-                .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+id+" does not exist")))
-                .map(RecipeDto::fromRecipe);
+                .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+id+" does not exist")));
     }
 
-    public Mono<RecipeDto> updateRecipe(RecipeUpdateRequest recipeUpdateRequest) {
+    public Mono<Recipe> updateRecipe(RecipeUpdateRequest recipeUpdateRequest) {
         return recipeRepository.update(Map.of(
                 "id", recipeUpdateRequest.getId(),
                 "title", recipeUpdateRequest.getTitle(),
@@ -41,21 +39,20 @@ public class RecipeService {
                 "image", recipeUpdateRequest.getImage(),
                 "products", recipeUpdateRequest.getProducts(),
                 "tags", recipeUpdateRequest.getTags()))
-                .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+recipeUpdateRequest.getId()+" does not exist")))
-                .map(RecipeDto::fromRecipe);
+                .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+recipeUpdateRequest.getId()+" does not exist")));
     }
     public Mono<Void> deleteRecipe(Long id) {
         return recipeRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NodeNotFound("Recipe with given id: "+id+" does not exist")))
                 .flatMap(recipeRepository::delete);
     }
-    public Mono<RecipeDto> newRecipe(RecipeInsertRequest recipeInsertRequest) {
+    public Mono<Recipe> newRecipe(RecipeInsertRequest recipeInsertRequest) {
         return recipeRepository.create(Map.of(
                 "title", recipeInsertRequest.getTitle(),
                 "link", recipeInsertRequest.getLink(),
                 "image", recipeInsertRequest.getImage(),
                 "products", recipeInsertRequest.getProducts(),
                 "tags", recipeInsertRequest.getTags()
-        )).map(RecipeDto::fromRecipe);
+        ));
     }
 }

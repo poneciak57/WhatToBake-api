@@ -1,6 +1,5 @@
 package com.whattobake.api.Service;
 
-import com.whattobake.api.Dto.RecipeDto;
 import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Repository.RecipeRepository;
 import com.whattobake.api.Util.Creators.RecipeCreator;
@@ -52,7 +51,7 @@ class RecipeServiceTest {
     public void testAllRecipes_whenFiltersAreOk_thenReturnFluxOfRecipes(){
         StepVerifier.create(recipeService.getAllRecipes(Optional.of(RecipeCreator.defaultFilters())))
                 .expectSubscription()
-                .expectNext(RecipeDto.fromRecipe(RecipeCreator.valid()))
+                .expectNext(RecipeCreator.valid())
                 .verifyComplete();
     }
 
@@ -61,7 +60,7 @@ class RecipeServiceTest {
     public void testAllRecipes_whenFiltersAreNull_thenReturnFluxOfRecipes(){
         StepVerifier.create(recipeService.getAllRecipes(Optional.empty()))
                 .expectSubscription()
-                .expectNext(RecipeDto.fromRecipe(RecipeCreator.valid()))
+                .expectNext(RecipeCreator.valid())
                 .verifyComplete();
     }
 
@@ -70,7 +69,7 @@ class RecipeServiceTest {
     public void testOneById_whenIdIsCorrect_thenReturnMonoOfRecipe(){
         StepVerifier.create(recipeService.getOneById(RecipeCreator.VALID_ID))
                 .expectSubscription()
-                .expectNext(RecipeDto.fromRecipe(RecipeCreator.valid()))
+                .expectNext(RecipeCreator.valid())
                 .verifyComplete();
     }
 
@@ -87,7 +86,7 @@ class RecipeServiceTest {
     public void testUpdateRecipe_whenIdIsCorrect_thenReturnMonoOfRecipe(){
         StepVerifier.create(recipeService.updateRecipe(RecipeCreator.validUpdate()))
                 .expectSubscription()
-                .expectNext(RecipeDto.fromRecipe(RecipeCreator.valid()))
+                .expectNext(RecipeCreator.valid())
                 .verifyComplete();
     }
 
@@ -122,7 +121,7 @@ class RecipeServiceTest {
     public void testNewRecipe_whenOK_thenReturnMonoOfRecipe(){
         StepVerifier.create(recipeService.newRecipe(RecipeCreator.validInsert()))
                 .expectSubscription()
-                .expectNext(RecipeDto.fromRecipe(RecipeCreator.valid()))
+                .expectNext(RecipeCreator.valid())
                 .verifyComplete();
     }
 
