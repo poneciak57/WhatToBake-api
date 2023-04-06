@@ -1,5 +1,6 @@
 package com.whattobake.api.Service;
 
+import com.whattobake.api.Dto.TagDto;
 import com.whattobake.api.Exception.NodeNotFound;
 import com.whattobake.api.Repository.TagRepository;
 import com.whattobake.api.Util.Creators.TagCreator;
@@ -47,7 +48,7 @@ class TagServiceTest {
     public void testAllTags_whenIsOk_thenReturnFluxOfTags(){
         StepVerifier.create(tagService.allTags())
                 .expectSubscription()
-                .expectNext(TagCreator.valid())
+                .expectNext(TagDto.fromTag(TagCreator.valid()))
                 .verifyComplete();
     }
 
@@ -56,7 +57,7 @@ class TagServiceTest {
     public void testOneById_whenIdIsCorrect_thenReturnMonoOfTag(){
         StepVerifier.create(tagService.oneById(TagCreator.VALID_ID))
                 .expectSubscription()
-                .expectNext(TagCreator.valid())
+                .expectNext(TagDto.fromTag(TagCreator.valid()))
                 .verifyComplete();
     }
 
@@ -73,7 +74,7 @@ class TagServiceTest {
     public void testUpdateTag_whenIdIsCorrect_thenReturnMonoOfTag(){
         StepVerifier.create(tagService.updateTag(TagCreator.validUpdate()))
                 .expectSubscription()
-                .expectNext(TagCreator.valid())
+                .expectNext(TagDto.fromTag(TagCreator.valid()))
                 .verifyComplete();
     }
 
@@ -109,7 +110,7 @@ class TagServiceTest {
     public void testNewTag_whenOK_thenReturnMonoOfTag(){
         StepVerifier.create(tagService.newTag(TagCreator.validInsert()))
                 .expectSubscription()
-                .expectNext(TagCreator.valid())
+                .expectNext(TagDto.fromTag(TagCreator.valid()))
                 .verifyComplete();
     }
 
