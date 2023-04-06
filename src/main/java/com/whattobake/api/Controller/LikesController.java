@@ -1,6 +1,7 @@
 package com.whattobake.api.Controller;
 
 import com.whattobake.api.Dto.RecipeDto;
+import com.whattobake.api.Model.Recipe;
 import com.whattobake.api.Model.User;
 import com.whattobake.api.Security.SecurityHelper;
 import com.whattobake.api.Service.LikesService;
@@ -26,6 +27,14 @@ import java.security.Principal;
 public class LikesController {
 
     private final LikesService likesService;
+
+    @GetMapping("/id")
+    public Flux<Long> getLikedIds(Mono<Principal> principal) {
+        return principal.map(SecurityHelper::UserFromPrincipal)
+                .map(User::getPbId)
+                .flatMapMany(likesService::getLikedRecipes)
+                .map(Recipe::getId);
+    }
 
     @GetMapping("")
     public Flux<RecipeDto> getLiked(Mono<Principal> principal) {
