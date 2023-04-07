@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 
-@Tag(name ="6. Tests")
+@Tag(name ="7. Tests")
 @RestController
 @RequestMapping("/api")
 public class AppController {

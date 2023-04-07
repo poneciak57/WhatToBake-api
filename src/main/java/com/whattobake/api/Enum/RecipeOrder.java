@@ -11,7 +11,10 @@ public enum RecipeOrder {
     PRODUCTS_PROGRESS_DESC(" Progress DESC "),
 
     CREATION_DATE_ASC(" recipe.creation_date ASC "),
-    CREATION_DATE_DESC(" recipe.creation_date DESC ");
+    CREATION_DATE_DESC(" recipe.creation_date DESC "),
+
+    RATING_ASC("recipe.rating ASC "),
+    RATING_DESC("recipe.rating DESC ");
 
 
     private final String value;
