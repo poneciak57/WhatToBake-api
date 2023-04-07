@@ -79,6 +79,7 @@ public abstract class BaseRepositoryTestHelper extends BaseRepositoryTestTestcon
                         .link(RecipeCreator.LINK)
                         .image(RecipeCreator.IMAGE)
                         .likes(0L)
+                        .rating((double) 0L)
                         .tags(tags)
                         .products(products)
                 .build()).block();
