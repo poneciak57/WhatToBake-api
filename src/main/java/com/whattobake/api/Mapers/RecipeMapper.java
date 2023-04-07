@@ -11,7 +11,7 @@ public class RecipeMapper extends Neo4jResultMapper<Recipe>{
             id: ID(recipe),
             .*,
             likes: size([(recipe)<-[l:LIKES]-(:USER) | {}]),
-            rating: apoc.coll.avg([(recipe)<-[rate:RATING]-(:USER) | rate.stars]),
+            rating: coalesce(apoc.coll.avg([(recipe)<-[rate:RATING]-(:USER) | rate.stars]), 0),
             products: apoc.coll.sortMaps([ (recipe)-[:NEEDS]->(p:PRODUCT) | p{
                 id: ID(p),
                 .*,
