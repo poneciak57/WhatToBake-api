@@ -35,7 +35,7 @@ public class TagTest extends BaseIntegrationTestHelper {
         Tag tag = createTag();
         log.info("data test: {}", tag.getCreationDate());
         webTestClient.get()
-                .uri("/tag")
+                .uri("/api/tag")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -53,7 +53,7 @@ public class TagTest extends BaseIntegrationTestHelper {
         Tag tag1 = createTag();
         Tag tag2 = createTag();
         webTestClient.get()
-                .uri("/tag/{id}", tag2.getId())
+                .uri("/api/tag/{id}", tag2.getId())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -65,7 +65,7 @@ public class TagTest extends BaseIntegrationTestHelper {
     @Test
     public void testFindOneById_whenTagDoesntExist_thenReturnNotFoundError() {
         webTestClient.get()
-                .uri("/tag/{id}", TagCreator.INVALID_ID)
+                .uri("/api/tag/{id}", TagCreator.INVALID_ID)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
@@ -78,7 +78,7 @@ public class TagTest extends BaseIntegrationTestHelper {
     @Test
     public void testCreate_whenValidPayload_thenReturnTag() {
         webTestClient.post()
-                .uri("/tag")
+                .uri("/api/tag")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue("""
                         {
@@ -97,7 +97,7 @@ public class TagTest extends BaseIntegrationTestHelper {
     @Test
     public void testCreate_whenInvalidPayload_thenReturnError() {
         webTestClient.post()
-                .uri("/tag")
+                .uri("/api/tag")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue("""
                         {
@@ -117,7 +117,7 @@ public class TagTest extends BaseIntegrationTestHelper {
     public void testUpdate_whenTagExist_thenReturnTag() {
         Tag tag = createTag();
         webTestClient.put()
-                .uri("/tag/{id}", tag.getId())
+                .uri("/api/tag/{id}", tag.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue("""
                         {
@@ -136,7 +136,7 @@ public class TagTest extends BaseIntegrationTestHelper {
     @Test
     public void testUpdate_whenTagDoesntExist_thenReturnNotFoundError() {
         webTestClient.put()
-                .uri("/tag/{id}", TagCreator.INVALID_ID)
+                .uri("/api/tag/{id}", TagCreator.INVALID_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue("""
                         {
@@ -157,7 +157,7 @@ public class TagTest extends BaseIntegrationTestHelper {
     public void testDelete_whenTagExists_thenReturnNothing() {
         Tag tag = createTag();
         webTestClient.delete()
-                .uri("/tag/{id}", tag.getId())
+                .uri("/api/tag/{id}", tag.getId())
                 .exchange()
                 .expectStatus().isOk();
         Assertions.assertEquals(0L, tagRepository.count().block());
@@ -167,7 +167,7 @@ public class TagTest extends BaseIntegrationTestHelper {
     public void testDelete_whenTagDoesntExist_thenReturnNotFoundError() {
         Tag tag = createTag();
         webTestClient.delete()
-                .uri("/tag/{id}", tag.getId() + 1)
+                .uri("/api/tag/{id}", tag.getId() + 1)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
