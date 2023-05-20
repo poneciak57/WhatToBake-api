@@ -25,6 +25,10 @@ public class LikesService {
         });
     }
 
+    public Flux<Recipe> getLikedRecipesPages(String pbUid, Integer page) {
+        return likeRepository.getRecipesPages(pbUid, page);
+    }
+
     public Flux<Recipe> getLikedRecipes(String pbUid) {
         return likeRepository.getRecipes(pbUid);
     }

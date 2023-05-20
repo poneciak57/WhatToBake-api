@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,10 +38,10 @@ public class LikesController {
     }
 
     @GetMapping("")
-    public Flux<RecipeDto> getLiked(Mono<Principal> principal) {
+    public Flux<RecipeDto> getLiked(Mono<Principal> principal, @RequestParam("page") Integer page) {
         return principal.map(SecurityHelper::UserFromPrincipal)
                 .map(User::getPbId)
-                .flatMapMany(likesService::getLikedRecipes)
+                .flatMapMany(uid -> likesService.getLikedRecipesPages(uid, page))
                 .map(RecipeDto::fromRecipe);
     }
 
