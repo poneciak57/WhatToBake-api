@@ -53,6 +53,9 @@ public class Recipe {
     private Long likes;
 
     @ReadOnlyProperty
+    private Long rating_count;
+
+    @ReadOnlyProperty
     private Double rating;
 
     @Nullable
