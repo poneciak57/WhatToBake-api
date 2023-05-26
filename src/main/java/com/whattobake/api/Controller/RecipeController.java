@@ -11,34 +11,25 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Optional;
 
 @Tag(name ="1. Recipe")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/recipe")
+@RequestMapping("/api/recipes")
 public class RecipeController {
 
     private final RecipeService recipeService;
 
     @GetMapping("/info")
-    public Mono<RecipeInfo> info(@Valid @RequestBody Mono<Optional<RecipeFilters>> recipeFilters) {
+    public Mono<RecipeInfo> info(@Valid Mono<RecipeFilters> recipeFilters) {
         return recipeFilters.flatMap(recipeService::info);
     }
 
     @GetMapping("")
-    public Flux<RecipeDto> getAllRecipes(@Valid @RequestBody Mono<Optional<RecipeFilters>> recipeFilters) {
+    public Flux<RecipeDto> getAllRecipes(@Valid Mono<RecipeFilters> recipeFilters) {
         return recipeFilters.flatMapMany(recipeService::getAllRecipes).map(RecipeDto::fromRecipe);
     }
 

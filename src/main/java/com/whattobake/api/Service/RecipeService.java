@@ -13,18 +13,17 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class RecipeService {
     private final RecipeRepository recipeRepository;
-    public Mono<RecipeInfo> info(Optional<RecipeFilters> recipeFilters) {
-        return recipeRepository.info(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
+    public Mono<RecipeInfo> info(RecipeFilters recipeFilters) {
+        return recipeRepository.info(recipeFilters.fillDefaults());
     }
 
-    public Flux<Recipe> getAllRecipes(Optional<RecipeFilters> recipeFilters) {
-        return recipeRepository.findAll(recipeFilters.orElse(new RecipeFilters()).fillDefaults());
+    public Flux<Recipe> getAllRecipes(RecipeFilters recipeFilters) {
+        return recipeRepository.findAll(recipeFilters.fillDefaults());
     }
     public Mono<Recipe> getOneById(Long id) {
         return recipeRepository.findOne(id)

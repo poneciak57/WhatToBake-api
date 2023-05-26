@@ -21,7 +21,7 @@ import java.security.Principal;
 
 @Tag(name ="6. Rating")
 @RestController
-@RequestMapping("/api/recipe/rating")
+@RequestMapping("/api/recipes/ratings")
 @RequiredArgsConstructor
 public class RatingController {
 

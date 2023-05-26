@@ -19,7 +19,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.util.Optional;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
@@ -49,16 +48,7 @@ class RecipeServiceTest {
     @Test
     @DisplayName("all, when filters are default should return flux of ")
     public void testAllRecipes_whenFiltersAreOk_thenReturnFluxOfRecipes(){
-        StepVerifier.create(recipeService.getAllRecipes(Optional.of(RecipeCreator.defaultFilters())))
-                .expectSubscription()
-                .expectNext(RecipeCreator.valid())
-                .verifyComplete();
-    }
-
-    @Test
-    @DisplayName("all, when filters are null, should return flux of recipes")
-    public void testAllRecipes_whenFiltersAreNull_thenReturnFluxOfRecipes(){
-        StepVerifier.create(recipeService.getAllRecipes(Optional.empty()))
+        StepVerifier.create(recipeService.getAllRecipes(RecipeCreator.defaultFilters()))
                 .expectSubscription()
                 .expectNext(RecipeCreator.valid())
                 .verifyComplete();

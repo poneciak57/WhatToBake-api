@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -23,9 +21,9 @@ public class ProductService {
 
     private final CategoryService categoryService;
 
-    public Flux<Product> getAllProducts(Optional<ProductFilters> productFilters) {
+    public Flux<Product> getAllProducts(ProductFilters productFilters) {
         return productRepository.findAll(Sort.by(
-                productFilters.orElse(new ProductFilters()).fillDefaults().getProductOrder().stream()
+                productFilters.fillDefaults().getProductOrder().stream()
                         .map(productOrder -> switch (productOrder){
                             case ALPHABETIC_DESC -> Sort.Order.desc("name");
                             case ALPHABETIC_ASC -> Sort.Order.asc("name");

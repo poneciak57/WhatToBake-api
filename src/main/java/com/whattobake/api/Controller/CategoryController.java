@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
 
 @Tag(name ="3. Category")
 @RestController
-@RequestMapping("/api/category")
+@RequestMapping("/api/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 

@@ -25,7 +25,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.util.Optional;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
@@ -61,16 +60,7 @@ class ProductServiceTest {
     @Test
     @DisplayName("all, when filters are default should return flux of products")
     public void testAllProducts_whenFiltersAreOk_thenReturnFluxOfProducts(){
-        StepVerifier.create(productService.getAllProducts(Optional.of(ProductCreator.defaultFilters())))
-                .expectSubscription()
-                .expectNext(ProductCreator.valid())
-                .verifyComplete();
-    }
-
-    @Test
-    @DisplayName("all, when filters are null, should return flux of products")
-    public void testAllProducts_whenFiltersAreNull_thenReturnFluxOfProducts(){
-        StepVerifier.create(productService.getAllProducts(Optional.empty()))
+        StepVerifier.create(productService.getAllProducts(ProductCreator.defaultFilters()))
                 .expectSubscription()
                 .expectNext(ProductCreator.valid())
                 .verifyComplete();

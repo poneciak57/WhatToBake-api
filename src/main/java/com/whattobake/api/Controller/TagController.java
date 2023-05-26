@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name ="4. Tag")
 @RestController
-@RequestMapping("/api/tag")
+@RequestMapping("/api/tags")
 @RequiredArgsConstructor
 @Validated
 public class TagController {

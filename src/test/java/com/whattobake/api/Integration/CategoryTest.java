@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
+import java.util.Objects;
+
 @WebFluxTest(controllers = CategoryController.class, excludeAutoConfiguration = {ReactiveSecurityAutoConfiguration.class})
 @Import(CategoryService.class)
 @Slf4j
@@ -27,13 +29,15 @@ public class CategoryTest extends BaseIntegrationTestHelper {
         connectToNeo4jContainer(registry);
     }
 
+    private static final String URL = "/api/categories";
+
     @Test
     public void testFindAll_whenCategoriesInDatabase_thenReturnListOfCategories() {
         Category category1 = createCategory();
         Category category2 = createCategory();
 
         webTestClient.get()
-                .uri("/api/category")
+                .uri(URL)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(CategoryDto.class)
@@ -46,7 +50,7 @@ public class CategoryTest extends BaseIntegrationTestHelper {
         Category category = createCategory();
 
         webTestClient.get()
-                .uri("/api/category/{id}", category.getId())
+                .uri(URL + "/{id}", category.getId())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(CategoryDto.class)
@@ -56,7 +60,7 @@ public class CategoryTest extends BaseIntegrationTestHelper {
     @Test
     public void testFindOneById_whenDoesntExistInDatabase_thenReturnNotFoundError() {
         webTestClient.get()
-                .uri("/api/category/{id}", CategoryCreator.INVALID_ID)
+                .uri(URL + "/{id}", CategoryCreator.INVALID_ID)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
@@ -71,13 +75,13 @@ public class CategoryTest extends BaseIntegrationTestHelper {
         CategoryInsertRequest request = new CategoryInsertRequest("New Category", "new-icon");
 
         webTestClient.post()
-                .uri("/api/category")
+                .uri(URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(CategoryDto.class)
-                .isEqualTo(CategoryDto.fromCategory(categoryRepository.findAll().blockFirst()));
+                .isEqualTo(CategoryDto.fromCategory(Objects.requireNonNull(categoryRepository.findAll().blockFirst())));
         Assertions.assertEquals(1L, categoryRepository.count().block());
     }
 
@@ -92,7 +96,7 @@ public class CategoryTest extends BaseIntegrationTestHelper {
                 .icon(categoryInsertRequest.getIcon())
                 .build();
         webTestClient.put()
-                .uri("/api/category/{id}", category.getId())
+                .uri(URL + "/{id}", category.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(categoryInsertRequest)
                 .exchange()
@@ -106,7 +110,7 @@ public class CategoryTest extends BaseIntegrationTestHelper {
         CategoryInsertRequest categoryInsertRequest
                 = new CategoryInsertRequest("updated", "updated");
         webTestClient.put()
-                .uri("/api/category/{id}", CategoryCreator.INVALID_ID)
+                .uri(URL + "/{id}", CategoryCreator.INVALID_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(categoryInsertRequest)
                 .exchange()
@@ -123,7 +127,7 @@ public class CategoryTest extends BaseIntegrationTestHelper {
     public void testDelete_whenCategoryExists_thenReturnNothing() {
         Category category = createCategory();
         webTestClient.delete()
-                .uri("/api/category/{id}", category.getId())
+                .uri(URL + "/{id}", category.getId())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody().isEmpty();
@@ -134,7 +138,7 @@ public class CategoryTest extends BaseIntegrationTestHelper {
     public void testDelete_whenCategoryDoesntExist_thenReturnNotFoundError() {
         Category category = createCategory();
         webTestClient.delete()
-                .uri("/api/category/{id}", category.getId() + 1)
+                .uri(URL + "/{id}", category.getId() + 1)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
