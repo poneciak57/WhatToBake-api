@@ -38,7 +38,7 @@ public class LikesController {
     }
 
     @GetMapping("")
-    public Flux<RecipeDto> getLiked(Mono<Principal> principal, @RequestParam("page") Integer page) {
+    public Flux<RecipeDto> getLiked(Mono<Principal> principal, @RequestParam("page") Long page) {
         return principal.map(SecurityHelper::UserFromPrincipal)
                 .map(User::getPbId)
                 .flatMapMany(uid -> likesService.getLikedRecipesPages(uid, page))

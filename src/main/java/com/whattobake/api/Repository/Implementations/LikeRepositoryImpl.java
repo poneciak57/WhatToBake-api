@@ -56,12 +56,12 @@ public class LikeRepositoryImpl implements LikeRepository {
     }
 
     @Override
-    public Flux<Recipe> getRecipesPages(String pbUid, Integer page) {
+    public Flux<Recipe> getRecipesPages(String pbUid, Long page) {
         String q = """
             MATCH (user:USER{pbId:$pbId})-[l:LIKES]->(recipe:RECIPE)
             RETURN""" + RecipeMapper.RETURN + """
             ORDER BY l.date DESC
-            SKIP """ + RECIPES_PER_PAGE * page + " LIMIT " + RECIPES_PER_PAGE;
+            SKIP""" + " " + RECIPES_PER_PAGE * page + " LIMIT " + RECIPES_PER_PAGE;
         return recipeMapper.resultAsFlux(recipeMapper.getMapperQueryNoAddon(q), Map.of("pbId",pbUid));
     }
 }

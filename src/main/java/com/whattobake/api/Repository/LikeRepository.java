@@ -14,5 +14,5 @@ public interface LikeRepository {
 
     Mono<Boolean> unlike(Long recipeId, String pbUid);
 
-    Flux<Recipe> getRecipesPages(String pbUid, Integer page);
+    Flux<Recipe> getRecipesPages(String pbUid, Long page);
 }
