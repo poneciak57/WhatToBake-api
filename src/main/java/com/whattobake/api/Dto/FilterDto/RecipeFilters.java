@@ -4,6 +4,7 @@ import com.whattobake.api.Enum.RecipeOrder;
 import com.whattobake.api.Enum.TagOption;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,8 +23,24 @@ public class RecipeFilters implements com.whattobake.api.Interfaces.NotNull<Reci
     @Nullable
     private Long page;
 
+    @Min(0)
+    @Max(5)
+    @Nullable
+    private Long rating;
+
+    @Min(0)
+    @Nullable
+    private Long minProducts;
+
+    @Min(0)
+    @Nullable
+    private Long maxProducts;
+
     @Nullable
     private List<@Min(0) @NotNull Long> products;
+
+    @Nullable
+    private List<@Min(0) @NotNull Long> keyProducts;
 
     @Nullable
     private List<@Min(0) @NotNull Long> tags;
@@ -43,7 +60,11 @@ public class RecipeFilters implements com.whattobake.api.Interfaces.NotNull<Reci
     @Override
     public RecipeFilters fillDefaults() {
         page = (page == null ? 0 : page);
+        rating = (rating == null ? 0 : rating);
+        minProducts = (minProducts == null ? 0 : minProducts);
+        maxProducts = (maxProducts == null ? Long.MAX_VALUE : maxProducts);
         products = (products == null ? List.of() : products);
+        keyProducts = (keyProducts == null ? List.of() : keyProducts);
         tags = (tags == null ? List.of() : tags);
         orderList = (orderList == null ? List.of() : orderList);
         tagOption = (tagOption == null ? TagOption.NORMAL : tagOption);

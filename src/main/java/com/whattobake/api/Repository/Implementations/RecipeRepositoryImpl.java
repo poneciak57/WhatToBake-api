@@ -6,6 +6,7 @@ import com.whattobake.api.Enum.RecipeOrder;
 import com.whattobake.api.Mapers.RecipeMapper;
 import com.whattobake.api.Model.Recipe;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.stereotype.Component;
@@ -16,12 +17,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class RecipeRepositoryImpl {
 
     @Value("${w2b.recipes.pageCount}")
     private Long RECIPES_PER_PAGE;
+
     private final ReactiveNeo4jClient client;
+
     private final RecipeMapper recipeMapper;
 
     @SuppressWarnings("unused")
@@ -51,7 +55,12 @@ public class RecipeRepositoryImpl {
                 """+ recipeFilters.getTagOption().getValue() +"""
                 CALL { WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) RETURN COUNT(p) AS prodCount }
                 CALL { WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $products RETURN COUNT(p) AS HasProducts }
+                CALL { WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $key_products RETURN COUNT(p) AS HasKeyProducts }
                 CALL { WITH recipe MATCH (recipe)<-[l:LIKES]-(:USER) RETURN COUNT(l) as likes }
+                WITH *
+                WHERE coalesce(apoc.coll.avg([(recipe)<-[rate:RATING]-(:USER) | rate.stars]), 0) >= $rating
+                AND prodCount >= $min_products AND prodCount <= $max_products
+                AND HasKeyProducts = $key_products_count
                 RETURN""" + RecipeMapper.RETURN + """
                     ,HasProducts ,(prodCount - HasProducts) AS HasNotProducts, prodCount AS AllProducts,
                     CASE prodCount
@@ -65,10 +74,16 @@ public class RecipeRepositoryImpl {
                     .collect(Collectors.joining(","));
         }
         q += (" SKIP " + RECIPES_PER_PAGE * recipeFilters.getPage() + " LIMIT " + RECIPES_PER_PAGE);
-        return recipeMapper.resultAsFlux(recipeMapper.getMapperQueryNoAddon(q),Map.of(
+
+        return recipeMapper.resultAsFlux(recipeMapper.getMapperQueryNoAddon(q), Map.of(
                 "products",recipeFilters.getProducts(),
                 "tags",recipeFilters.getTags(),
-                "tags_size",recipeFilters.getTags().size()
+                "tags_size",recipeFilters.getTags().size(),
+                "rating", recipeFilters.getRating(),
+                "min_products", recipeFilters.getMinProducts(),
+                "max_products", recipeFilters.getMaxProducts(),
+                "key_products", recipeFilters.getKeyProducts(),
+                "key_products_count", recipeFilters.getKeyProducts().size()
         ));
     }
 
