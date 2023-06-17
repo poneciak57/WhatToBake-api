@@ -43,7 +43,7 @@ public class SecurityConfiguration {
                 .pathMatchers("/api/test/user").authenticated()
                 .pathMatchers("/api/test/admin").authenticated()
                 .pathMatchers("/api/likes/**").authenticated()
-                .pathMatchers("/api/recipe/rating/**").authenticated()
+                .pathMatchers("/api/recipes/ratings/**").authenticated()
                 .anyExchange().permitAll()
                 .and().build();
     }

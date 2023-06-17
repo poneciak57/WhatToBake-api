@@ -4,8 +4,6 @@ import com.whattobake.api.Dto.FilterDto.RecipeFilters;
 import com.whattobake.api.Dto.InfoDto.RecipeInfo;
 import com.whattobake.api.Dto.InsertDto.RecipeInsertRequest;
 import com.whattobake.api.Dto.UpdateDto.RecipeUpdateRequest;
-import com.whattobake.api.Enum.RecipeOrder;
-import com.whattobake.api.Enum.TagOption;
 import com.whattobake.api.Model.Recipe;
 
 import java.util.List;
@@ -115,16 +113,6 @@ public class RecipeCreator {
 
     public static RecipeFilters defaultFilters(){
         return (new RecipeFilters()).fillDefaults();
-    }
-
-    public static RecipeFilters customFilters(){
-        return new RecipeFilters(
-                1L,
-                List.of(),
-                List.of(),
-                List.of(RecipeOrder.PRODUCTS_HASNOT_ASC),
-                TagOption.STRICT
-        );
     }
 
     public static RecipeInfo validRecipeInfo(){

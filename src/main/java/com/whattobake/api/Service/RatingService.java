@@ -7,6 +7,7 @@ import com.whattobake.api.Repository.RatingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -28,4 +29,7 @@ public class RatingService {
         });
     }
 
+    public Flux<Recipe> getRated(Long page, String pbUid) {
+        return ratingRepository.ratedRecipes(page, pbUid);
+    }
 }
