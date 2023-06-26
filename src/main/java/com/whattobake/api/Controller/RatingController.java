@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
+import java.util.Map;
 
 @Tag(name ="6. Rating")
 @RestController
@@ -22,6 +23,12 @@ import java.security.Principal;
 public class RatingController {
 
     private final RatingService ratingService;
+
+    @GetMapping("/id")
+    public Mono<Map<Long, Long>> ratedRecipeIds(Mono<Principal> principal) {
+        return principal.map(SecurityHelper::UserFromPrincipal)
+                .flatMap(u -> ratingService.getRatedShort(u.getPbId()));
+    }
 
     @GetMapping("")
     public Flux<RecipeDto> ratedRecipeList(Mono<Principal> principal, @RequestParam("page") Long page) {

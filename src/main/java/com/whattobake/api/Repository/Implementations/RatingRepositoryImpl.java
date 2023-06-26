@@ -59,4 +59,20 @@ public class RatingRepositoryImpl implements RatingRepository{
             """;
         return recipeMapper.resultAsFlux(recipeMapper.getMapperQueryNoAddon(q), Map.of("pbId",pbUid));
     }
+
+    @Override
+    public Mono<Map<Long, Long>> ratedRecipesShort(String pbId) {
+        String q = """
+            MATCH (user:USER{pbId:$pbId})-[r:RATING]->(recipe:RECIPE)
+            RETURN ID(recipe) as key, r.stars as value
+            """;
+        return client.query(q)
+                .bind(pbId).to("pbId")
+                .fetch()
+                .all()
+                .collectMap(
+                        record -> (Long) record.get("key"),
+                        record -> (Long) record.get("value")
+                );
+    }
 }

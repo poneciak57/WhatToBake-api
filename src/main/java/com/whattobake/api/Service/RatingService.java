@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -31,5 +33,9 @@ public class RatingService {
 
     public Flux<Recipe> getRated(Long page, String pbUid) {
         return ratingRepository.ratedRecipes(page, pbUid);
+    }
+
+    public Mono<Map<Long, Long>> getRatedShort(String pbId) {
+        return ratingRepository.ratedRecipesShort(pbId);
     }
 }

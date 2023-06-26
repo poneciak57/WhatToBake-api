@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Repository
 public interface RatingRepository {
 
@@ -14,4 +16,6 @@ public interface RatingRepository {
     Mono<Boolean> deleteRating(Long recipeId, String pbUid);
 
     Flux<Recipe> ratedRecipes(Long page, String pbUid);
+
+    Mono<Map<Long, Long>> ratedRecipesShort(String pbId);
 }
