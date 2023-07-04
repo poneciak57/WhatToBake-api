@@ -31,16 +31,27 @@ public class RecipeRepositoryImpl {
     @SuppressWarnings("unused")
     public Mono<RecipeInfo> info(RecipeFilters recipeFilters) {
         String q = """
-            CALL { MATCH (recipe:RECIPE) RETURN COUNT(recipe) AS countAll }
-            CALL {
                 MATCH (recipe:RECIPE)
+                CALL { MATCH (recipe:RECIPE) RETURN COUNT(recipe) as countAll }
+                CALL { WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) RETURN COUNT(p) AS prodCount }
+                CALL { WITH recipe MATCH (recipe)-[:NEEDS]->(p:PRODUCT) WHERE ID(p) IN $key_products RETURN COUNT(p) AS HasKeyProducts }
+                WITH *
                 """ + recipeFilters.getTagOption().getValue() + """
-                RETURN COUNT(recipe) AS countWithFilters
-            }
-            RETURN countAll as count, countWithFilters
-            """;
+                AND HasKeyProducts = $key_products_count
+                AND prodCount >= $min_products AND prodCount <= $max_products
+                AND coalesce(apoc.coll.avg([(recipe)<-[rate:RATING]-(:USER) | rate.stars]), 0) >= $rating
+                RETURN countAll as count, COUNT(recipe) as countWithFilters
+                """;
         return client.query(q)
-                .bindAll(Map.of("tags",recipeFilters.getTags(), "tags_size", recipeFilters.getTags().size()))
+                .bindAll(Map.of(
+                        "tags",recipeFilters.getTags(),
+                        "tags_size", recipeFilters.getTags().size(),
+                        "rating", recipeFilters.getRating(),
+                        "min_products", recipeFilters.getMinProducts(),
+                        "max_products", recipeFilters.getMaxProducts(),
+                        "key_products", recipeFilters.getKeyProducts(),
+                        "key_products_count", recipeFilters.getKeyProducts().size()
+                ))
                 .fetchAs(RecipeInfo.class)
                 .mappedBy((ts,r)-> RecipeInfo.builder()
                                 .count(r.get("count").asLong())
